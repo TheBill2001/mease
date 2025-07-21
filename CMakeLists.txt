@@ -69,13 +69,13 @@ target_link_libraries(MEASaveEditor PRIVATE
 
 if(WIN32)
     set_target_properties(MEASaveEditor PROPERTIES
-        WIN32
+        WIN32_EXECUTABLE TRUE
     )
 endif()
 
 if(APPLE)
     set_target_properties(MEASaveEditor PROPERTIES
-        MACOSX_BUNDLE
+        MACOSX_BUNDLE TRUE
     )
 endif()
 

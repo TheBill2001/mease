@@ -1,0 +1,48 @@
+name: Build Windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  QT_VERSION: 6.9.1
+
+defaults:
+  run:
+    shell: msys2 {0}
+
+jobs:
+  buid:
+    name: '🚧 Build MEASESaveEditor'
+    runs-on: 'windows-latest'
+    steps:
+      - name: '⚙️ Setup MSYS2'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          update: true
+          pacboy: >-
+            extra-cmake-modules:p
+      - name: '📥 Install Qt'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          cache: true
+      - name: '✅ Checkout repo'
+        uses: actions/checkout@v4
+        with:
+          path: app-source
+      - name: '⚙️ Configure'
+        run: cmake -S app-source -B app-build -G 'Visual Studio 17 2022' -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" -DCMAKE_INSTALL_PREFIX=MEASESaveEditor
+      - name: '🚧 Build and Install'
+        run: |
+          cmake --build app-build --parallel --config Release
+          cmake --install app-build
+      - name: '📤 Upload artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          path: MEASESaveEditor
