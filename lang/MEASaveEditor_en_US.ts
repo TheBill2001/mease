@@ -4,81 +4,81 @@
 <context>
     <name>MEASE::AboutDialog</name>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="41"/>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="94"/>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="96"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="42"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="90"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="92"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="42"/>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="97"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="43"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="93"/>
         <source>Authors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="44"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="45"/>
         <source>License</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="45"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="46"/>
         <source>Software Used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="101"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="97"/>
         <source>About Mass Effect: Andromeda Save Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="98"/>
+        <source>A save editor for Mass Effect: Andromeda Save Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="99"/>
+        <source>Copyright © 2025 Trần Nam Tuấn</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/mease/ui/aboutdialog.cpp" line="102"/>
-        <source>&lt;p&gt;A save editor for Mass Effect: Andromeda Save Editor.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="103"/>
-        <source>&lt;p&gt;Copyright © 2025 Trần Nam Tuấn&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="106"/>
         <source>Homepage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="109"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="105"/>
         <source>Bug report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="119"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="115"/>
         <source>Author and maintainer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="122"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="118"/>
         <source>Name</source>
         <comment>People&apos;s name</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="125"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="121"/>
         <source>Website</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="128"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="124"/>
         <source>E-mail</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="142"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="138"/>
         <source>%1 was built with the following libraries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mease/ui/aboutdialog.cpp" line="142"/>
+        <location filename="../src/mease/ui/aboutdialog.cpp" line="138"/>
         <source>Mass Effect: Andromeda Save Editor</source>
         <translation type="unfinished"></translation>
     </message>

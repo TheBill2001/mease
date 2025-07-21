@@ -95,8 +95,8 @@ public:
         {
             QStringList list;
             list << u"<h3>%1 v%2</h3>"_s.arg(AboutDialog::tr("About Mass Effect: Andromeda Save Editor"), qApp->applicationVersion());
-            list << AboutDialog::tr("<p>A save editor for Mass Effect: Andromeda Save Editor.</p>");
-            list << AboutDialog::tr("<p>Copyright © 2025 Trần Nam Tuấn</p>");
+            list << u"<p>%1</p>"_s.arg(AboutDialog::tr("A save editor for Mass Effect: Andromeda Save Editor"));
+            list << u"<p>%1</p>"_s.arg(AboutDialog::tr("Copyright © 2025 Trần Nam Tuấn"));
             list << u"<table style=\"margin-top: 16px\">"_s;
             list << u"<tr>"_s;
             list << u"<td>%1:</td><td><a href=\"%2\">%2</a></td>"_s.arg(AboutDialog::tr("Homepage"), u"https://github.com/TheBill2001/MEASaveEditor"_s);
