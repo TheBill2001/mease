@@ -22,7 +22,7 @@ namespace MEASE
 
 class AboutDialogPrivate
 {
-    MEASE_DECLARE_QT_PUBLIC(AboutDialog)
+    MEASE_DEFINE_QT_PRIVATE(AboutDialog)
 public:
     QTabWidget *tabWidget = nullptr;
     QLabel *aboutLabel = new QLabel();

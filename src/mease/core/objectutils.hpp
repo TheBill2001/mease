@@ -6,7 +6,7 @@
 
 #include <qtclasshelpermacros.h>
 
-#define MEASE_DECLARE_QT_PUBLIC(CLASS)                                                                                                                         \
+#define MEASE_DEFINE_QT_PRIVATE(CLASS)                                                                                                                         \
     Q_DISABLE_COPY(CLASS##Private)                                                                                                                             \
     Q_DECLARE_PUBLIC(CLASS)                                                                                                                                    \
     CLASS *q_ptr;                                                                                                                                              \

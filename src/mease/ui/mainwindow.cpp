@@ -16,7 +16,7 @@ namespace MEASE
 
 class MainWindowPrivate
 {
-    MEASE_DECLARE_QT_PUBLIC(MainWindow)
+    MEASE_DEFINE_QT_PRIVATE(MainWindow)
 public:
     // Menubar
     QMenuBar menuBar;
