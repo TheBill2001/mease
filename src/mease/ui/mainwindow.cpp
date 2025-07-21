@@ -5,9 +5,14 @@
 
 #include "mease/core/objectutils.hpp"
 #include "mease/ui/aboutdialog.hpp"
+#include "mease/ui/components/actionbutton.hpp"
 
 #include <QApplication>
+#include <QGridLayout>
+#include <QLabel>
 #include <QMenuBar>
+#include <QSizePolicy>
+#include <QSpacerItem>
 
 using namespace Qt::Literals::StringLiterals;
 
@@ -19,59 +24,139 @@ class MainWindowPrivate
     MEASE_DEFINE_QT_PRIVATE(MainWindow)
 public:
     // Menubar
-    QMenuBar menuBar;
-    QMenu fileMenu;
-    QMenu editMenu;
-    QMenu helpMenu;
+    QMenuBar *menuBar = nullptr;
+    QMenu *fileMenu = nullptr;
+    QMenu *editMenu = nullptr;
+    QMenu *helpMenu = nullptr;
 
     // File menu actions
-    QAction openSaveFileAction;
-    QAction saveSaveFileAction;
-    QAction saveSaveFileAsAction;
-    QAction reloadSaveFileAction;
-    QAction quitAction;
+    QAction *openSaveFileAction = nullptr;
+    QAction *saveSaveFileAction = nullptr;
+    QAction *saveSaveFileAsAction = nullptr;
+    QAction *reloadSaveFileAction = nullptr;
+    QAction *quitAction = nullptr;
 
     // Help menu actions
-    QAction openAboutDialogAction;
-    AboutDialog aboutDialog;
+    QAction *openAboutQtDialogAction = nullptr;
+    QAction *openAboutDialogAction = nullptr;
+    AboutDialog *aboutDialog = nullptr;
+
+    // Landing page
+    QWidget *landingPage = nullptr;
+    QLabel *landingLabel = nullptr;
+
+    // Editor page
+    QWidget *editorPage = nullptr;
 
     MainWindowPrivate(MainWindow *self)
         : q_ptr{self}
-        , menuBar{self}
-        , fileMenu{MainWindow::tr("&File"), self}
-        , editMenu{MainWindow::tr("&Edit"), self}
-        , helpMenu{MainWindow::tr("&Help"), self}
-        , openSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen), AboutDialog::tr("&Open"), self}
-        , saveSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSave), AboutDialog::tr("&Save"), self}
-        , saveSaveFileAsAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), AboutDialog::tr("Save &As..."), self}
-        , reloadSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::ViewRefresh), AboutDialog::tr("&Reload"), self}
-        , quitAction{QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit), AboutDialog::tr("&Quit"), self}
-        , openAboutDialogAction{MainWindow::tr("&About..."), self}
-        , aboutDialog{self}
+        , menuBar{new QMenuBar(self)}
+        , aboutDialog{new AboutDialog(self)}
     {
-        openSaveFileAction.setShortcut({Qt::CTRL | Qt::Key_O});
-        saveSaveFileAction.setShortcut({Qt::CTRL | Qt::Key_S});
-        saveSaveFileAsAction.setShortcut({Qt::CTRL | Qt::SHIFT | Qt::Key_S});
-        reloadSaveFileAction.setShortcut({Qt::CTRL | Qt::Key_R});
-        quitAction.setShortcut({Qt::CTRL | Qt::Key_Q});
+        // Setup action
+        {
+            fileMenu = menuBar->addMenu(QString());
+            editMenu = menuBar->addMenu(QString());
+            helpMenu = menuBar->addMenu(QString());
+            self->setMenuBar(menuBar);
 
-        menuBar.addMenu(&fileMenu);
-        menuBar.addMenu(&editMenu);
-        menuBar.addMenu(&helpMenu);
+            openSaveFileAction = fileMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen), {});
+            saveSaveFileAction = fileMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::DocumentSave), {});
+            saveSaveFileAsAction = fileMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), {});
+            reloadSaveFileAction = fileMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::ViewRefresh), {});
+            fileMenu->addSeparator();
+            quitAction = fileMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit), {});
 
-        fileMenu.addAction(&openSaveFileAction);
-        fileMenu.addAction(&saveSaveFileAction);
-        fileMenu.addAction(&saveSaveFileAsAction);
-        fileMenu.addAction(&reloadSaveFileAction);
-        fileMenu.addSeparator();
-        fileMenu.addAction(&quitAction);
+            openAboutQtDialogAction = helpMenu->addAction({}, qApp, &QApplication::aboutQt);
+            openAboutDialogAction = helpMenu->addAction(QString());
 
-        helpMenu.addAction(MainWindow::tr("About &Qt"), qApp, &QApplication::aboutQt);
-        helpMenu.addAction(&openAboutDialogAction);
+            openSaveFileAction->setShortcut({Qt::CTRL | Qt::Key_O});
+            saveSaveFileAction->setShortcut({Qt::CTRL | Qt::Key_S});
+            saveSaveFileAsAction->setShortcut({Qt::CTRL | Qt::SHIFT | Qt::Key_S});
+            reloadSaveFileAction->setShortcut({Qt::CTRL | Qt::Key_R});
+            quitAction->setShortcut({Qt::CTRL | Qt::Key_Q});
 
-        connect(&quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+            saveSaveFileAction->setDisabled(true);
+            saveSaveFileAsAction->setDisabled(true);
+            reloadSaveFileAction->setDisabled(true);
 
-        connect(&openAboutDialogAction, &QAction::triggered, &aboutDialog, &QDialog::open);
+            connect(quitAction, &QAction::triggered, QCoreApplication ::instance(), &QCoreApplication::quit);
+            connect(openAboutDialogAction, &QAction::triggered, aboutDialog, &QDialog::open);
+        }
+
+        makeLandingPage();
+
+        retranslateUi();
+    }
+
+    void makeLandingPage()
+    {
+        if (landingPage) {
+            return;
+        }
+
+        Q_Q(MainWindow);
+        landingPage = new QWidget();
+        auto *layout = new QGridLayout(landingPage);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), 0, 0, 1, 3);
+        layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum), 1, 0, 2, 1);
+        layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum), 1, 2, 2, 1);
+        layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), 3, 0, 1, 3);
+
+        landingLabel = new QLabel(landingPage);
+        landingLabel->setMaximumWidth(250);
+        landingLabel->setWordWrap(true);
+        landingLabel->setAlignment(Qt::AlignCenter);
+        layout->addWidget(landingLabel, 1, 1, Qt::AlignCenter);
+
+        auto *button = new ActionPushButton(openSaveFileAction, landingPage);
+        layout->addWidget(button, 2, 1, Qt::AlignCenter);
+
+        q->setCentralWidget(landingPage);
+        clearEditor();
+    }
+
+    void clearLanding()
+    {
+        landingPage = nullptr;
+        landingLabel = nullptr;
+    }
+
+    void makeEditor()
+    {
+        if (editorPage) {
+            return;
+        }
+
+        Q_Q(MainWindow);
+        q->setCentralWidget(editorPage);
+        clearLanding();
+    }
+
+    void clearEditor()
+    {
+        editorPage = nullptr;
+    }
+
+    void retranslateUi()
+    {
+        fileMenu->setTitle(MainWindow::tr("&File"));
+        editMenu->setTitle(MainWindow::tr("&Edit"));
+        helpMenu->setTitle(MainWindow::tr("&Help"));
+
+        openSaveFileAction->setText(AboutDialog::tr("&Open"));
+        saveSaveFileAction->setText(AboutDialog::tr("&Save"));
+        saveSaveFileAsAction->setText(AboutDialog::tr("Save &As..."));
+        reloadSaveFileAction->setText(AboutDialog::tr("&Reload"));
+        quitAction->setText(AboutDialog::tr("&Quit"));
+
+        openAboutQtDialogAction->setText(MainWindow::tr("About &Qt"));
+        openAboutDialogAction->setText(MainWindow::tr("&About..."));
+
+        if (landingPage && landingLabel) {
+            landingLabel->setText(MainWindow::tr("Open a save file to continue"));
+        }
     }
 };
 
@@ -79,14 +164,20 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , d_ptr{new MainWindowPrivate(this)}
 {
-    Q_D(MainWindow);
-
     setMinimumSize(200, 200);
     resize(500, 500);
-
-    setMenuBar(&d->menuBar);
 }
 
 MainWindow::~MainWindow() = default;
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        Q_D(MainWindow);
+        d->retranslateUi();
+    }
+
+    QWidget::changeEvent(event);
+}
 
 } // namespace MEASE

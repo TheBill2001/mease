@@ -17,6 +17,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+protected:
+    void changeEvent(QEvent *event) override;
+
 private:
     Q_DECLARE_PRIVATE(MainWindow)
     QScopedPointer<MainWindowPrivate> d_ptr;

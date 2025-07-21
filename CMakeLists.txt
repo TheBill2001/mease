@@ -52,6 +52,9 @@ qt_add_executable(MEASaveEditor
     src/mease/misc/licenses/gpl-3.0-standalone.cpp
     src/mease/misc/licenses/gpl-3.0-standalone.hpp
 
+    src/mease/ui/components/actionbutton.cpp
+    src/mease/ui/components/actionbutton.hpp
+
     src/mease/ui/aboutdialog.cpp
     src/mease/ui/aboutdialog.hpp
     src/mease/ui/mainwindow.cpp
