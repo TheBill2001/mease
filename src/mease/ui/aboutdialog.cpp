@@ -4,6 +4,7 @@
 #include "mease/misc/licenses/gpl-3.0-standalone.hpp"
 
 #include <QApplication>
+#include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QEvent>
 #include <QFile>
@@ -39,21 +40,27 @@ public:
         self->setLayout(layout);
         layout->addWidget(tabWidget);
 
-        newTab(AboutDialog::tr("About"), aboutLabel, QIcon::fromTheme(QIcon::ThemeIcon::ImageMissing));
+        newTab(AboutDialog::tr("About"), aboutLabel, true, QIcon::fromTheme(QIcon::ThemeIcon::ImageMissing));
         newTab(AboutDialog::tr("Authors"), authorsLabel);
         // newTab(AboutDialog::tr("Special Thanks"), specialThanksLabel);
-        newTab(AboutDialog::tr("License"), licenseLabel);
-        newTab(AboutDialog::tr("Software Used"), softwareUsedLabel);
-        softwareUsedLabel->setMinimumWidth(300);
 
-        {
-            licenseLabel->setText(gpl30StandaloneText);
-        }
+        newTab(AboutDialog::tr("License"), licenseLabel);
+        licenseLabel->setText(gpl30StandaloneText);
+
+        newTab(AboutDialog::tr("Software Used"), softwareUsedLabel, false);
+        softwareUsedLabel->setMinimumWidth(250);
+        connect(softwareUsedLabel, &QLabel::linkActivated, [](const QString &link) {
+            if (link == "action-about-qt"_L1) {
+                QApplication::aboutQt();
+            } else {
+                QDesktopServices::openUrl(QUrl(link));
+            }
+        });
 
         retranslateUi();
     }
 
-    void newTab(const QString &title, QLabel *text, const QIcon &icon = {}, Qt::TextFormat format = Qt::RichText)
+    void newTab(const QString &title, QLabel *text, bool openExternalLinks = true, const QIcon &icon = {})
     {
         auto *content = new QWidget();
         auto *layout = new QHBoxLayout(content);
@@ -68,9 +75,9 @@ public:
         }
 
         {
-            text->setTextFormat(format);
+            text->setTextFormat(Qt::RichText);
             text->setWordWrap(true);
-            text->setOpenExternalLinks(true);
+            text->setOpenExternalLinks(openExternalLinks);
             text->setTextInteractionFlags(Qt::TextBrowserInteraction);
             layout->addWidget(text, 0, Qt::AlignTop);
         }
@@ -138,7 +145,7 @@ public:
                 AboutDialog::tr("%1 was built with the following libraries").arg(u"<b>%1</b>"_s.arg(AboutDialog::tr("Mass Effect: Andromeda Save Editor"))));
             list << u"<table style=\"margin-left: 16px;\">"_s;
             list << u"<tr>"_s;
-            list << u"<td><a href=\"https://www.qt.io/\">Qt</a>:</td><td>%2</td>"_s.arg(QStringLiteral(QT_VERSION_STR));
+            list << u"<td><a href=\"action-about-qt\">Qt</a>:</td><td>%2</td>"_s.arg(QStringLiteral(QT_VERSION_STR));
             list << u"</tr>"_s;
             // list << u"<tr>"_s;
             // list << u"<td>zlib:</td><td>%2</td>"_s.arg(QStringLiteral(""));
