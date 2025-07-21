@@ -38,15 +38,15 @@ public:
     MainWindowPrivate(MainWindow *self)
         : q_ptr{self}
         , menuBar{self}
-        , fileMenu{tr("&File"), self}
-        , editMenu{tr("&Edit"), self}
-        , helpMenu{tr("&Help"), self}
-        , openSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen), tr("&Open"), self}
-        , saveSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSave), tr("&Save"), self}
-        , saveSaveFileAsAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), tr("Save &As..."), self}
-        , reloadSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::ViewRefresh), tr("&Reload"), self}
-        , quitAction{QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit), tr("&Quit"), self}
-        , openAboutDialogAction{tr("&About..."), self}
+        , fileMenu{MainWindow::tr("&File"), self}
+        , editMenu{MainWindow::tr("&Edit"), self}
+        , helpMenu{MainWindow::tr("&Help"), self}
+        , openSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen), AboutDialog::tr("&Open"), self}
+        , saveSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSave), AboutDialog::tr("&Save"), self}
+        , saveSaveFileAsAction{QIcon::fromTheme(QIcon::ThemeIcon::DocumentSaveAs), AboutDialog::tr("Save &As..."), self}
+        , reloadSaveFileAction{QIcon::fromTheme(QIcon::ThemeIcon::ViewRefresh), AboutDialog::tr("&Reload"), self}
+        , quitAction{QIcon::fromTheme(QIcon::ThemeIcon::ApplicationExit), AboutDialog::tr("&Quit"), self}
+        , openAboutDialogAction{MainWindow::tr("&About..."), self}
         , aboutDialog{self}
     {
         openSaveFileAction.setShortcut({Qt::CTRL | Qt::Key_O});
@@ -66,7 +66,7 @@ public:
         fileMenu.addSeparator();
         fileMenu.addAction(&quitAction);
 
-        helpMenu.addAction(tr("About &Qt"), qApp, &QApplication::aboutQt);
+        helpMenu.addAction(MainWindow::tr("About &Qt"), qApp, &QApplication::aboutQt);
         helpMenu.addAction(&openAboutDialogAction);
 
         connect(&quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     Q_D(MainWindow);
 
     setMinimumSize(200, 200);
-    setFixedSize(500, 500);
+    resize(500, 500);
 
     setMenuBar(&d->menuBar);
 }

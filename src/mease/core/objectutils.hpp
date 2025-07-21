@@ -12,12 +12,6 @@
     CLASS *q_ptr;                                                                                                                                              \
                                                                                                                                                                \
     template<typename... Args>                                                                                                                                 \
-    static QString tr(Args &&...args)                                                                                                                          \
-    {                                                                                                                                                          \
-        return CLASS::tr(std::forward<Args>(args)...);                                                                                                         \
-    }                                                                                                                                                          \
-                                                                                                                                                               \
-    template<typename... Args>                                                                                                                                 \
     constexpr static auto connect(Args &&...args)                                                                                                              \
     {                                                                                                                                                          \
         return QObject::connect(std::forward<Args>(args)...);                                                                                                  \

@@ -37,7 +37,7 @@ jobs:
         with:
           path: app-source
       - name: '⚙️ Configure'
-        run: cmake -S app-source -B app-build -G 'Visual Studio 17 2022' -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" -DCMAKE_INSTALL_PREFIX=MEASESaveEditor
+        run: cmake -S app-source -B app-build -G 'Visual Studio 17 2022' -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" -DCMAKE_INSTALL_PREFIX=artifacts/MEASESaveEditor
       - name: '🚧 Build and Install'
         run: |
           cmake --build app-build --parallel --config Release
@@ -45,4 +45,5 @@ jobs:
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
         with:
-          path: MEASESaveEditor
+          name: MEASESaveEditor
+          path: artifacts
