@@ -7,8 +7,8 @@ set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 1)
 
-set(KF6_MIN_VERSION 6.13)
-set(QT6_MIN_VERSION 6.9)
+set(KF6_MIN_VERSION 6.10)
+set(QT6_MIN_VERSION 6.8.3)
 set(ZLIB_MIN_VERSION 1.3.1)
 
 set(CMAKE_AUTOUIC OFF)
@@ -95,6 +95,12 @@ set_target_properties(MEASaveEditor PROPERTIES
 ## Deployment
 include(GNUInstallDirs)
 
+install(TARGETS MEASaveEditor
+    BUNDLE  DESTINATION .
+    RUNTIME DESTINATION "${RUNTIME_INSTALL_DIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+
 set(deploy_tool_options
     "--translations en" # Qt's translations, not app's translation
 )
@@ -102,12 +108,6 @@ set(deploy_tool_options
 if(WIN32)
     set(deploy_tool_options "${deploy_tool_options} --no-system-d3d-compiler --no-network --no-opengl-sw")
 endif()
-
-install(TARGETS MEASaveEditor
-    BUNDLE  DESTINATION .
-    RUNTIME DESTINATION "${RUNTIME_INSTALL_DIR}"
-    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-)
 
 qt_generate_deploy_app_script(
     TARGET MEASaveEditor
