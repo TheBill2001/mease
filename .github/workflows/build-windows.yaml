@@ -7,92 +7,48 @@ on:
 
 env:
   QT_VERSION: 6.9.1
-  KF_VERSION: 6.16.0
 
 defaults:
   run:
-    shell: pwsh
+    shell: msys2 {0}
 
 jobs:
-  build-ecm:
-    name: '🚧 Build Extra CMake Modules'
-    runs-on: 'windows-latest'
-    steps:
-      - name: '📥 Check ECM cache'
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          key: ECM-${{ env.KF_VERSION }}-${{ runner.os }}
-          fail-on-cache-miss: false
-          lookup-only: true
-          path: ecm-prefix
-      - name: '📥 Install Qt'
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: windows
-          target: desktop
-          arch: win64_msvc2022_64
-          cache: true
-      - name: '📥 Download ECM ${{ env.KF_VERSION }} source'
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          Invoke-WebRequest "https://github.com/KDE/extra-cmake-modules/archive/refs/tags/v$env:KF_VERSION.tar.gz" -OutFile "ecm.tar.gz"
-          New-Item -ItemType Directory -Path ecm-source -Force | Out-Null
-          tar -C ecm-source --strip-components=1 -xvf "ecm.tar.gz"
-      - name: '⚙️ Configure MSVC'
-        uses: ilammy/msvc-dev-cmd@v1
-        if: steps.cache.outputs.cache-hit != 'true'
-      - name: '🚧 Build and Install ECM'
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          cmake -G Ninja -S ecm-source -B ecm-build `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" `
-            -DCMAKE_INSTALL_PREFIX="$pwd\ecm-prefix" `
-            -DBUILD_DOC=OFF `
-            -DBUILD_TESTING=OFF
-          cmake --build ecm-build --parallel
-          cmake --install ecm-build
-      - name: '📤 Save ECM to cache'
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          key: ECM-${{ env.KF_VERSION }}-${{ runner.os }}
-          path: ecm-prefix
-  buid:
+  build:
     name: '🚧 Build MEASESaveEditor'
-    needs: [build-ecm]
     runs-on: 'windows-latest'
     steps:
+      - name: '📥 Setup msys2'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: >-
+            git
+            make
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
+            extra-cmake-modules:p
+            zlib:p
       - name: '📥 Install Qt'
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
           host: windows
           target: desktop
-          arch: win64_msvc2022_64
+          arch: win64_mingw
           cache: true
-      - name: '📥 Check ECM cache'
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          key: ECM-${{ env.KF_VERSION }}-${{ runner.os }}
-          fail-on-cache-miss: true
-          path: ecm-prefix
       - name: '✅ Checkout repo'
         uses: actions/checkout@v4
         with:
           path: app-source
-      - name: '⚙️ Configure MSVC'
-        uses: ilammy/msvc-dev-cmd@v1
       - name: '⚙️ Configure'
         run: |
-          cmake -S app-source -B app-build -G Ninja `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_PREFIX_PATH="$pwd\ecm-prefix;$env:QT_ROOT_DIR" `
-            -DCMAKE_INSTALL_PREFIX="$pwd\artifacts\MEASESaveEditor"
+          cmake -S app-source -B app-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$PWD/ecm-prefix;$QT_ROOT_DIR" \
+            -DCMAKE_INSTALL_PREFIX="$PWD/artifacts/MEASESaveEditor"
       - name: '🚧 Build and Install'
         run: |
           cmake --build app-build --parallel

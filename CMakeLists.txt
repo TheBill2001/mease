@@ -9,6 +9,7 @@ set(PROJECT_VERSION_PATCH 1)
 
 set(KF6_MIN_VERSION 6.13)
 set(QT6_MIN_VERSION 6.9)
+set(ZLIB_MIN_VERSION 1.3.1)
 
 set(CMAKE_AUTOUIC OFF)
 
@@ -23,6 +24,7 @@ find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${ECM_MODULE_PATH}")
 
 find_package(Qt6 ${QT6_MIN_VERSION} REQUIRED COMPONENTS Core Widgets LinguistTools)
+find_package(ZLIB ${ZLIB_MIN_VERSION} REQUIRED)
 
 include(ECMSetupVersion)
 include(KDEClangFormat)
@@ -78,6 +80,7 @@ target_include_directories(MEASaveEditor PRIVATE
 target_link_libraries(MEASaveEditor PRIVATE
     Qt::Core
     Qt::Widgets
+    ZLIB::ZLIB
 )
 
 target_compile_definitions(MEASaveEditor PRIVATE
@@ -92,8 +95,9 @@ set_target_properties(MEASaveEditor PROPERTIES
 ## Deployment
 include(GNUInstallDirs)
 
-list(JOIN lang_list "," deploy_lang)
-set(deploy_tool_options "--translations ${deploy_lang}")
+set(deploy_tool_options
+    "--translations en" # Qt's translations, not app's translation
+)
 
 if(WIN32)
     set(deploy_tool_options "${deploy_tool_options} --no-system-d3d-compiler --no-network --no-opengl-sw")
