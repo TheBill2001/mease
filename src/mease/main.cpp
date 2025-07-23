@@ -14,9 +14,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     app.setApplicationName(u"MEASaveEditor"_s);
-    app.setOrganizationName(u"TheBill2001"_s);
     app.setApplicationDisplayName(QObject::tr("Mass Effect: Andromeda Save Editor"));
     app.setApplicationVersion(QStringLiteral(MEASE_VERSION_STRING));
+    app.setOrganizationName(u"TheBill2001"_s);
+    app.setOrganizationDomain(u"thebill2001.github.io"_s);
     // app.setWindowIcon();
 #ifdef Q_OS_UNIX
     // app.setDesktopFileName();

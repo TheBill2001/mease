@@ -23,6 +23,11 @@ protected:
 private:
     Q_DECLARE_PRIVATE(MainWindow)
     QScopedPointer<MainWindowPrivate> d_ptr;
+
+private Q_SLOTS:
+    void updateActions();
+    void openSaveFileActionTriggered();
+    void openSaveFileSelected(const QString &filePath);
 };
 
 } // namespace MEASE

@@ -10,6 +10,20 @@ SaveFile::SaveFile(const SaveFileData &data, QObject *parent)
 {
 }
 
+bool SaveFile::isBigEndian() const
+{
+    return m_data.isBigEndian;
+}
+
+void SaveFile::setBigEndian(bool value)
+{
+    if (m_data.isBigEndian == value) {
+        return;
+    }
+    m_data.isBigEndian = value;
+    Q_EMIT isBigEndianChanged(m_data.version);
+}
+
 quint16 SaveFile::version() const
 {
     return m_data.version;

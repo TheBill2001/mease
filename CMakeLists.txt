@@ -13,6 +13,9 @@ set(ZLIB_MIN_VERSION 1.3.1)
 
 set(CMAKE_AUTOUIC OFF)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 project(MEASaveEditor
     LANGUAGES CXX
     VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
@@ -53,14 +56,35 @@ qt_add_executable(MEASaveEditor
 
     src/mease/misc/licenses/gpl-3.0-standalone.cpp
     src/mease/misc/licenses/gpl-3.0-standalone.hpp
+    
+    src/mease/misc/number/datetime.cpp
+    src/mease/misc/number/datetime.hpp
+    src/mease/misc/number/endian.hpp
+
+    src/mease/serialize/datastream.cpp
+    src/mease/serialize/savefile.cpp
+    src/mease/serialize/savefileheader.cpp
+
+    src/mease/services/message.cpp
+    src/mease/services/message.hpp
+
+    src/mease/ui/mainwindow.cpp
+    src/mease/ui/mainwindow.hpp
 
     src/mease/ui/components/actionbutton.cpp
     src/mease/ui/components/actionbutton.hpp
+    src/mease/ui/components/utils.cpp
+    src/mease/ui/components/utils.hpp
 
-    src/mease/ui/aboutdialog.cpp
-    src/mease/ui/aboutdialog.hpp
-    src/mease/ui/mainwindow.cpp
-    src/mease/ui/mainwindow.hpp
+    src/mease/ui/dialogs/aboutdialog.cpp
+    src/mease/ui/dialogs/aboutdialog.hpp
+
+    src/mease/ui/pages/editorpage.cpp
+    src/mease/ui/pages/editorpage.hpp
+    src/mease/ui/pages/landingpage.cpp
+    src/mease/ui/pages/landingpage.hpp
+    src/mease/ui/pages/loadingpage.cpp
+    src/mease/ui/pages/loadingpage.hpp
 )
 
 foreach(lang ${lang_list})

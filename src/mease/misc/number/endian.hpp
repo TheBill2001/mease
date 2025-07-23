@@ -1,13 +1,18 @@
 #ifndef MEASE_ENDIAN_HPP
 #define MEASE_ENDIAN_HPP
 
+#include <array>
 #include <concepts>
+#include <cstring>
 
 namespace MEASE
 {
 
+template<typename T>
+consteval T swapEndian(T src) = delete;
+
 template<std::integral T>
-constexpr T swapEndian(T src)
+consteval T swapEndian(T src)
 {
     T result = 0;
     for (std::size_t i = 0; i < sizeof(T); ++i) {

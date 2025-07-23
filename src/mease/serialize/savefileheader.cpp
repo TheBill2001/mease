@@ -1,7 +1,7 @@
 #include "mease/data/savefileheader.hpp"
 #include "mease/misc/hashing/djb2.hpp"
+#include "mease/misc/number/datetime.hpp"
 #include "mease/misc/number/endian.hpp"
-#include "mease/serialize/datastream.hpp"
 #include "mease/serialize/datastream_p.hpp"
 
 #include <zlib.h>
@@ -40,28 +40,132 @@ enum Key {
 }
 
 template<>
-SaveFileHeaderData DataStream::read<SaveFileHeaderData>(qsizetype len, Error *p_error)
+DataStream::Result<SaveFileHeaderData> DataStream::read<SaveFileHeaderData>(qsizetype len)
 {
-    Error error;
-    if (p_error) {
-        *p_error = error;
+    QByteArray data;
+
+    {
+        STRM_READ_MSG(quint32, hash, QObject::tr("Failed to read header checksum"))
+
+        STRM_READ_LEN_ASSIGN_MSG(QByteArray, data, len - sizeof(quint32), QObject::tr("Failed to read header data"))
+
+        const quint32 computedHash = crc32(0x12345678, reinterpret_cast<const Bytef *>(data.constData()), data.size());
+        if (hash != computedHash) {
+            return checksumMismatch(QObject::tr("Failed to verify header data"), hash, computedHash);
+        }
     }
 
-    STREAM_RET_LEN(QByteArray, bytes, len, error, QObject::tr("Failed to read header"))
+    DataStream stream(data);
 
-    DataStream stream(bytes);
+    {
+        STREAM_READ_MSG(stream, quint64, magic, QObject::tr("Failed to read header signature"))
 
-    STREAM_RET(quint32, hash, error, QObject::tr("Failed to read header hash"))
-    STREAM_RET_LEN(QByteArray, data, len - sizeof(quint32), error, QObject::tr("Failed to read header data"))
+        switch (stream.byteOrder()) {
+        case BigEndian:
+            if (magic != signature_be) {
+                return invalidSignature(QObject::tr("Failed to read header data"), signature_le, magic);
+            }
+            break;
+        case LittleEndian:
+            if (magic != signature_le) {
+                return invalidSignature(QObject::tr("Failed to read header data"), signature_be, magic);
+            }
+            break;
+        }
+    }
 
-    quint32 computedHash = crc32(0x12345678, reinterpret_cast<const Bytef *>(data.constData()), data.size());
-    STREAM_RET_COND(hash != computedHash,
-                    p_error,
-                    Error::ChecksumMismatch,
-                    QObject::tr("Mismatched checksum for header data, expected %1, got %2")
-                        .arg(QString::number(hash, 16).toUpper(), QString::number(computedHash, 16).toUpper()))
+    SaveFileHeaderData header;
 
-    return {};
+    STREAM_READ_ASSIGN_MSG(stream, quint16, header.version, QObject::tr("Failed to read header data"))
+    if (header.version != 1) {
+        return unsupportedVersion(QObject::tr("Failed to read save file"), 1, header.version);
+    }
+
+    STREAM_READ_MSG(stream, quint32, count, QObject::tr("Failed to read header data"))
+
+    for (quint32 i = 0; i < count; ++i) {
+        STREAM_READ_MSG(stream, quint32, keyHash, QObject::tr("Failed to read header data"))
+        STREAM_READ_MSG(stream, quint16, valueSize, QObject::tr("Failed to read header data"))
+        STREAM_READ_LEN_MSG(stream, QString, value, valueSize, QObject::tr("Failed to read header data"))
+
+        switch (keyHash) {
+        case AreaNameStringId:
+            header.areaNameStringId = value;
+            break;
+        case AreaThumbnailTextureId:
+            header.areaThumbnailTextureId = value;
+            break;
+        case GameVersion:
+            header.gameVersion = value;
+            break;
+        case RequiredDLC:
+            header.requiredDLC = value;
+            break;
+        case RequiredInstallGroup:
+            header.requiredInstallGroup = value;
+            break;
+        case ProfileName:
+            header.profileName = value;
+            break;
+        case ProfileUniqueName:
+            header.profileUniqueName = value;
+            break;
+        case ProfileId:
+            header.profileId = value;
+            break;
+        case LevelID:
+            header.levelId = value;
+            break;
+        case PlayerLevel:
+            header.playerLevel = value;
+            break;
+        case GameCompleted:
+            header.gameCompleted = value == "true"_L1;
+            break;
+        case TrialMode:
+            header.trialMode = value == "true"_L1;
+            break;
+        case CompletionPercentage: {
+            bool ok = false;
+            header.completionPercentage = value.toDouble(&ok);
+            if (!ok) {
+                return errorMsg(QObject::tr("Failed to read completion percentage"), QObject::tr("Not a valid double floating point number"));
+            }
+        } break;
+        case DateTime: {
+            bool ok = false;
+            const quint64 numValue = value.toULongLong(&ok);
+            if (!ok) {
+                return errorMsg(QObject::tr("Failed to read header date time"), QObject::tr("Not a valid integer"));
+            }
+            header.dateTime = fromJulianSeconds(numValue);
+        } break;
+        case LevelTitleID:
+            header.levelTitleId = value;
+            break;
+        case LevelFloorID:
+            header.levelFloorId = value;
+            break;
+        case LevelRegionID:
+            header.levelRegionId = value;
+            break;
+        case TotalPlaytime: {
+            bool ok = false;
+            header.totalPlaytime = value.toDouble(&ok);
+            if (!ok) {
+                return errorMsg(QObject::tr("Failed to read total playtime"), QObject::tr("Not a valid double floating point number"));
+            }
+        } break;
+        case NameOverrideStringId:
+            header.nameOverrideStringId = value;
+            break;
+        default:
+            header.unknownValues.emplace(keyHash, value);
+            break;
+        }
+    }
+
+    return header;
 }
 
 } // namespace MEASE

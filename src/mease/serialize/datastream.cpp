@@ -1,56 +1,95 @@
-#include "mease/serialize/datastream.hpp"
+#include "mease/serialize/datastream_p.hpp"
 
 #include <QObject>
-
-using namespace Qt::Literals::StringLiterals;
 
 namespace MEASE
 {
 
-DataStream::Error DataStream::Error::notEnoughData(int expected, int got)
+std::unexpected<QString> errorMsg(QStringView msg, QStringView error)
 {
-    return {NotEnoughData,
-            u"%1, %2, %3"_s.arg(QObject::tr("Not enough data", "SaveFileStream::Error::NotEnoughData"),
-                                QObject::tr("expected %n byte(s)", "SaveFileStream::Error::NotEnoughData", expected),
-                                QObject::tr("got %n byte(s)", "SaveFileStream::Error::NotEnoughData", got))};
+    return std::unexpected(u"%1: %2"_s.arg(msg, error));
+}
+
+std::unexpected<QString> errorMsg(QStringView msg)
+{
+    return std::unexpected(msg.toString());
+}
+
+std::unexpected<QString> unexpected(QStringView error)
+{
+    return std::unexpected(QObject::tr("Unexpected error: %1").arg(error));
+}
+
+DataStreamPrivate::DataStreamPrivate(QIODevice *device, DataStream *q_ptr)
+    : q_ptr{q_ptr}
+    , stream{device}
+{
+    stream.setByteOrder(QDataStream::LittleEndian);
+}
+
+DataStreamPrivate::DataStreamPrivate(const QByteArray &bytes, DataStream *q_ptr)
+    : q_ptr{q_ptr}
+    , stream{bytes}
+{
+    stream.setByteOrder(QDataStream::LittleEndian);
+}
+
+DataStreamPrivate::DataStreamPrivate(QByteArray *array, QIODeviceBase::OpenMode mode, DataStream *q_ptr)
+    : q_ptr{q_ptr}
+    , stream{array, mode}
+{
+    stream.setByteOrder(QDataStream::LittleEndian);
 }
 
 DataStream::DataStream(QIODevice *device)
-    : m_stream{device}
+    : d_ptr{new DataStreamPrivate(device, this)}
 {
 }
 
 DataStream::DataStream(const QByteArray &bytes)
-    : m_stream{bytes}
+    : d_ptr{new DataStreamPrivate(bytes, this)}
 {
 }
 
 DataStream::DataStream(QByteArray *array, QIODeviceBase::OpenMode mode)
-    : m_stream{array, mode}
+    : d_ptr{new DataStreamPrivate(array, mode, this)}
 {
 }
 
+DataStream::~DataStream() = default;
+
 DataStream::ByteOrder DataStream::byteOrder() const
 {
-    return static_cast<DataStream::ByteOrder>(m_stream.byteOrder());
+    Q_D(const DataStream);
+    return static_cast<DataStream::ByteOrder>(d->stream.byteOrder());
 }
 
 void DataStream::setByteOrder(ByteOrder byteOrder)
 {
-    m_stream.setByteOrder(static_cast<QDataStream::ByteOrder>(byteOrder));
+    Q_D(DataStream);
+    d->stream.setByteOrder(static_cast<QDataStream::ByteOrder>(byteOrder));
 }
 
 template<>
-QByteArray DataStream::read<QByteArray>(qsizetype len, Error *p_error)
+DataStream::Result<QByteArray> DataStream::read<QByteArray>(qsizetype len)
 {
+    Q_D(DataStream);
     QByteArray bytes(len, Qt::Uninitialized);
-    const auto read = m_stream.readRawData(bytes.data(), len);
+    const auto read = d->stream.readRawData(bytes.data(), len);
     if (read != len) {
-        bytes.resize(read);
-        bytes.squeeze();
-        *p_error = Error::notEnoughData(len, read);
+        return notEnoughData(len, read);
     }
     return bytes;
+}
+
+template<>
+DataStream::Result<QString> DataStream::read<QString>(qsizetype len)
+{
+    const auto bytes = read<QByteArray>(len);
+    if (!bytes.has_value()) {
+        return errorMsg(bytes.error());
+    }
+    return QString::fromUtf8(bytes.value());
 }
 
 } // namespace MEASE

@@ -1,4 +1,4 @@
-#include "mease/ui/aboutdialog.hpp"
+#include "mease/ui/dialogs/aboutdialog.hpp"
 
 #include "mease/core/objectutils.hpp"
 #include "mease/misc/licenses/gpl-3.0-standalone.hpp"
