@@ -41,44 +41,46 @@ public:
     Result<T> read(qsizetype len) = delete;
 
     template<std::integral T>
-    Result<T> read()
-    {
-        const auto ret = read<QByteArray>(sizeof(T));
-        if (!ret.has_value()) {
-            return std::unexpected(ret.error());
-        }
-
-        const auto &bytes = ret.value();
-        T value = 0;
-        if (byteOrder() == LittleEndian) {
-            for (size_t i = 0; i < sizeof(T); ++i) {
-                value |= static_cast<T>(static_cast<quint8>(bytes[i])) << (8 * i);
-            }
-        } else {
-            for (size_t i = 0; i < sizeof(T); ++i) {
-                value |= static_cast<T>(static_cast<quint8>(bytes[i])) << (8 * (sizeof(T) - i - 1));
-            }
-        }
-        return value;
-    }
-
-    template<>
-    Result<QByteArray> read<QByteArray>(qsizetype len);
-
-    template<>
-    Result<QString> read<QString>(qsizetype len);
-
-    template<>
-    Result<SaveFileData> read<SaveFileData>();
-
-    template<>
-    Result<SaveFileHeaderData> read<SaveFileHeaderData>(qsizetype len);
+    Result<T> read();
 
 private:
     Q_DECLARE_PRIVATE(DataStream)
     QScopedPointer<DataStreamPrivate> d_ptr;
 };
 
+template<>
+DataStream::Result<QByteArray> DataStream::read<QByteArray>(qsizetype len);
+
+template<>
+DataStream::Result<QString> DataStream::read<QString>(qsizetype len);
+
+template<>
+DataStream::Result<SaveFileData> DataStream::read<SaveFileData>();
+
+template<>
+DataStream::Result<SaveFileHeaderData> DataStream::read<SaveFileHeaderData>(qsizetype len);
+
+template<std::integral T>
+DataStream::Result<T> DataStream::read()
+{
+    const auto ret = read<QByteArray>(sizeof(T));
+    if (!ret.has_value()) {
+        return std::unexpected(ret.error());
+    }
+
+    const auto &bytes = ret.value();
+    T value = 0;
+    if (byteOrder() == LittleEndian) {
+        for (size_t i = 0; i < sizeof(T); ++i) {
+            value |= static_cast<T>(static_cast<quint8>(bytes[i])) << (8 * i);
+        }
+    } else {
+        for (size_t i = 0; i < sizeof(T); ++i) {
+            value |= static_cast<T>(static_cast<quint8>(bytes[i])) << (8 * (sizeof(T) - i - 1));
+        }
+    }
+    return value;
+}
 }
 
 #endif // MEASE_DATASTREAM_HPP
