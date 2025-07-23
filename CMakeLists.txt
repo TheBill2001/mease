@@ -52,6 +52,11 @@ qt_standard_project_setup(
 qt_add_executable(MEASaveEditor
     src/mease/main.cpp
 
+    src/mease/data/savefile.cpp
+    src/mease/data/savefile.hpp
+    src/mease/data/savefileheader.cpp
+    src/mease/data/savefileheader.hpp
+
     src/mease/misc/licenses/gpl-3.0-standalone.cpp
     src/mease/misc/licenses/gpl-3.0-standalone.hpp
     
@@ -71,11 +76,16 @@ qt_add_executable(MEASaveEditor
 
     src/mease/ui/components/actionbutton.cpp
     src/mease/ui/components/actionbutton.hpp
+    src/mease/ui/components/basetab.cpp
+    src/mease/ui/components/basetab.hpp
     src/mease/ui/components/utils.cpp
     src/mease/ui/components/utils.hpp
 
     src/mease/ui/dialogs/aboutdialog.cpp
     src/mease/ui/dialogs/aboutdialog.hpp
+
+    src/mease/ui/editor/rawdatatab.cpp
+    src/mease/ui/editor/rawdatatab.hpp
 
     src/mease/ui/pages/editorpage.cpp
     src/mease/ui/pages/editorpage.hpp

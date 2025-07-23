@@ -7,7 +7,7 @@
 namespace MEASE
 {
 
-class SaveFileHeaderData
+class SaveFileHeaderData final
 {
     Q_GADGET
     Q_PROPERTY(quint16 version MEMBER version FINAL)
@@ -58,7 +58,7 @@ public:
     bool operator==(const SaveFileHeaderData &other) const = default;
 };
 
-class SaveFileHeader : public QObject
+class SaveFileHeader final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(quint16 version READ version WRITE setVersion NOTIFY versionChanged FINAL)

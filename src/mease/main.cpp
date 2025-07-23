@@ -7,11 +7,18 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QtSystemDetection>
 
 using namespace Qt::Literals::StringLiterals;
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_WIN
+    QApplication::setStyle(u"fusion"_s);
+#elif defined(Q_OS_MACOS)
+    QApplication::setStyle(u"macos"_s);
+#endif
+
     QApplication app(argc, argv);
     app.setApplicationName(u"MEASaveEditor"_s);
     app.setApplicationDisplayName(QObject::tr("Mass Effect: Andromeda Save Editor"));

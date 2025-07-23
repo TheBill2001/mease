@@ -6,7 +6,7 @@
 namespace MEASE
 {
 
-class ActionPushButton : public QPushButton
+class ActionPushButton final : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY(QAction *action READ action WRITE setAction NOTIFY actionChanged FINAL)

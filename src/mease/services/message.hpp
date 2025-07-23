@@ -7,7 +7,7 @@ namespace MEASE
 {
 
 class MessageServicePrivate;
-class MessageService : public QObject
+class MessageService final : public QObject
 {
     Q_OBJECT
     friend class MessageServiceStatic;

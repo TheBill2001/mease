@@ -11,7 +11,7 @@ namespace MEASE
 {
 
 class DataStreamPrivate;
-class DataStream : public QIODeviceBase
+class DataStream final : public QIODeviceBase
 {
 public:
     template<typename T>

@@ -94,7 +94,7 @@ using namespace Qt::Literals::StringLiterals;
 namespace MEASE
 {
 
-class DataStreamPrivate
+class DataStreamPrivate final
 {
     Q_DISABLE_COPY(DataStreamPrivate)
     Q_DECLARE_PUBLIC(DataStream)

@@ -27,7 +27,7 @@ using namespace Qt::Literals::StringLiterals;
 namespace MEASE
 {
 
-class MainWindowPrivate
+class MainWindowPrivate final
 {
     Q_DISABLE_COPY(MainWindowPrivate)
     Q_DECLARE_PUBLIC(MainWindow)
@@ -35,6 +35,7 @@ class MainWindowPrivate
 
 public:
     QMutex mutex;
+    int lastIndex{};
 
     // Menubar
     QMenuBar *menuBar;
@@ -135,20 +136,22 @@ public:
         centralWidget->setCurrentIndex(index);
     }
 
-    void loadSaveFile(const QString &filePath)
+    void loadSaveFile(const QFileInfo &fileInfo)
     {
-        const int lastIndex = centralWidget->currentIndex();
+        lastIndex = centralWidget->currentIndex();
         setIndex(1);
 
-        QThreadPool::globalInstance()->start([this, filePath, lastIndex]() {
+        QThreadPool::globalInstance()->start([this, fileInfo]() {
+            Q_Q(MainWindow);
             bool failed = false;
 
-            QFile file(filePath);
+            QFile file(fileInfo.filePath());
             if (file.open(QFile::ReadOnly)) {
                 DataStream stream(&file);
                 auto saveFileDataRes = stream.read<SaveFileData>();
                 if (saveFileDataRes.has_value()) {
-                    // TODO
+                    saveFileDataRes->fileInfo = fileInfo;
+                    Q_EMIT q->saveFileLoaded(saveFileDataRes.value());
                 } else {
                     messageService()->pushError(MainWindow::tr("Failed to open save file"), saveFileDataRes.error());
                     failed = true;
@@ -159,7 +162,7 @@ public:
             }
 
             if (failed) {
-                setIndex(lastIndex);
+                Q_EMIT q->loadSaveFileFailed();
             }
         });
     }
@@ -211,6 +214,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(d->openAboutQtDialogAction, &QAction::triggered, qApp, &QApplication::aboutQt);
     connect(d->openAboutDialogAction, &QAction::triggered, d->aboutDialog, &QDialog::open);
     connect(d->centralWidget, &QStackedWidget::currentChanged, this, &MainWindow::updateActions);
+    connect(this, &MainWindow::saveFileLoaded, this, [this](const SaveFileData &saveFileData) {
+        Q_D(MainWindow);
+        d->editorPage->loadSaveFile(saveFileData);
+        d->setIndex(2);
+    });
+    connect(this, &MainWindow::loadSaveFileFailed, this, [this]() {
+        Q_D(MainWindow);
+        d->setIndex(d->lastIndex);
+    });
 
     d->centralWidget->addWidget(d->landingPage);
     d->centralWidget->addWidget(d->loadingPage);
@@ -265,7 +277,7 @@ void MainWindow::openSaveFileSelected(const QString &filePath)
     QSettings().setValue("History/LastOpenDir", fileInfo.path());
 
     Q_D(MainWindow);
-    d->loadSaveFile(filePath);
+    d->loadSaveFile(fileInfo);
 }
 
 } // namespace MEASE

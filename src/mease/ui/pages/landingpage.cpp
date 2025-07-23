@@ -52,10 +52,10 @@ LandingPage::LandingPage(QAction *openSaveFileAction, QWidget *widget)
     d->label->setWordWrap(true);
     d->label->setAlignment(Qt::AlignCenter);
 
-    d->layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+    d->layout->addStretch(1);
     d->layout->addWidget(d->label, 0, Qt::AlignCenter);
     d->layout->addWidget(d->button, 0, Qt::AlignCenter);
-    d->layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+    d->layout->addStretch(1);
 
     d->retranslateUi();
 }

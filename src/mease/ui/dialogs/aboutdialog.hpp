@@ -7,7 +7,7 @@ namespace MEASE
 {
 
 class AboutDialogPrivate;
-class AboutDialog : public QDialog
+class AboutDialog final : public QDialog
 {
     Q_OBJECT
 public:

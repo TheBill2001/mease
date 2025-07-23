@@ -8,7 +8,7 @@
 namespace MEASE
 {
 
-class MessageServiceStatic
+class MessageServiceStatic final
 {
     Q_DISABLE_COPY_MOVE(MessageServiceStatic)
 public:
@@ -29,7 +29,7 @@ struct MessageInfo {
     QString message;
 };
 
-class MessageServicePrivate : public QObject
+class MessageServicePrivate final : public QObject
 {
     Q_OBJECT
 public:

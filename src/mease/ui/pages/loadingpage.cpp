@@ -52,10 +52,10 @@ LoadingPage::LoadingPage(QWidget *parent)
     d->progressBar->setMinimumWidth(150);
     d->progressBar->setMaximumWidth(300);
 
-    d->layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+    d->layout->addStretch(1);
     d->layout->addWidget(d->label, 0, Qt::AlignCenter);
     d->layout->addWidget(d->progressBar, 0, Qt::AlignCenter);
-    d->layout->addItem(new QSpacerItem(0, 0, QSizePolicy::Preferred, QSizePolicy::Expanding));
+    d->layout->addStretch(1);
 
     d->retranslateUi();
 }

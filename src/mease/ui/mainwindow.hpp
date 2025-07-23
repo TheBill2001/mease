@@ -8,14 +8,18 @@
 
 namespace MEASE
 {
-
+class SaveFileData;
 class MainWindowPrivate;
-class MainWindow : public QMainWindow
+class MainWindow final : public QMainWindow
 {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+
+Q_SIGNALS:
+    void saveFileLoaded(const MEASE::SaveFileData &saveFiledata);
+    void loadSaveFileFailed();
 
 protected:
     void changeEvent(QEvent *event) override;
@@ -29,6 +33,5 @@ private Q_SLOTS:
     void openSaveFileActionTriggered();
     void openSaveFileSelected(const QString &filePath);
 };
-
 } // namespace MEASE
 #endif // MEASE_MAINWINDOW_HPP
