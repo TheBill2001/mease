@@ -52,8 +52,6 @@ qt_standard_project_setup(
 qt_add_executable(MEASaveEditor
     src/mease/main.cpp
 
-    src/mease/core/objectutils.hpp
-
     src/mease/misc/licenses/gpl-3.0-standalone.cpp
     src/mease/misc/licenses/gpl-3.0-standalone.hpp
     

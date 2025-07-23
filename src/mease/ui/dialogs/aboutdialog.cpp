@@ -1,6 +1,5 @@
 #include "mease/ui/dialogs/aboutdialog.hpp"
 
-#include "mease/core/objectutils.hpp"
 #include "mease/misc/licenses/gpl-3.0-standalone.hpp"
 
 #include <QApplication>
@@ -23,7 +22,10 @@ namespace MEASE
 
 class AboutDialogPrivate
 {
-    MEASE_DEFINE_QT_PRIVATE(AboutDialog)
+    Q_DISABLE_COPY(AboutDialogPrivate)
+    Q_DECLARE_PUBLIC(AboutDialog)
+    AboutDialog *q_ptr;
+
 public:
     QTabWidget *tabWidget = nullptr;
     QLabel *aboutLabel = new QLabel();
@@ -49,7 +51,7 @@ public:
 
         newTab(AboutDialog::tr("Software Used"), softwareUsedLabel, false);
         softwareUsedLabel->setMinimumWidth(250);
-        connect(softwareUsedLabel, &QLabel::linkActivated, [](const QString &link) {
+        QObject::connect(softwareUsedLabel, &QLabel::linkActivated, [](const QString &link) {
             if (link == "action-about-qt"_L1) {
                 QApplication::aboutQt();
             } else {

@@ -1,6 +1,5 @@
 #include "mease/ui/pages/loadingpage.hpp"
 
-#include "mease/core/objectutils.hpp"
 #include "mease/ui/components/utils.hpp"
 
 #include <QEvent>
@@ -13,7 +12,10 @@ namespace MEASE
 
 class LoadingPagePrivate final
 {
-    MEASE_DEFINE_QT_PRIVATE(LoadingPage)
+    Q_DISABLE_COPY(LoadingPagePrivate)
+    Q_DECLARE_PUBLIC(LoadingPage)
+    LoadingPage *q_ptr;
+
 public:
     QLabel *label;
     QProgressBar *progressBar;

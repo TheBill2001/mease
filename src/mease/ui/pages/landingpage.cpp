@@ -1,6 +1,5 @@
 #include "mease/ui/pages/landingpage.hpp"
 
-#include "mease/core/objectutils.hpp"
 #include "mease/ui/components/actionbutton.hpp"
 #include "mease/ui/components/utils.hpp"
 
@@ -16,7 +15,10 @@ namespace MEASE
 
 class LandingPagePrivate final
 {
-    MEASE_DEFINE_QT_PRIVATE(LandingPage)
+    Q_DISABLE_COPY(LandingPagePrivate)
+    Q_DECLARE_PUBLIC(LandingPage)
+    LandingPage *q_ptr;
+
 public:
     QAction *action;
     QLabel *label;
