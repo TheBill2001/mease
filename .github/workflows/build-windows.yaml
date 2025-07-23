@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   build:
-    name: '🚧 Build MEASESaveEditor'
+    name: '🚧 Build MEASaveEditor'
     runs-on: 'windows-latest'
     steps:
       - name: '📥 Setup msys2'
@@ -48,13 +48,19 @@ jobs:
           cmake -S app-source -B app-build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="$PWD/ecm-prefix;$QT_ROOT_DIR" \
-            -DCMAKE_INSTALL_PREFIX="$PWD/artifacts/MEASESaveEditor"
+            -DCMAKE_INSTALL_PREFIX="$PWD/artifacts/MEASaveEditor"
       - name: '🚧 Build and Install'
         run: |
           cmake --build app-build --parallel
+      - name: '📦 Install'
+        run: |
           cmake --install app-build
+
+          EXE_PATH="$PWD/artifacts/MEASaveEditor/bin/MEASaveEditor.exe"
+          ZLIB_DLL=$(ldd "$EXE_PATH" | grep zlib1.dll | cut -d " " -f 3)
+          cp "$ZLIB_DLL" "$PWD/artifacts/MEASaveEditor/bin"
       - name: '📤 Upload artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: MEASESaveEditor
+          name: MEASaveEditor
           path: artifacts

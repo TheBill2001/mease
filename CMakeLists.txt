@@ -24,7 +24,7 @@ project(MEASaveEditor
 )
 
 find_package(ECM ${KF6_MIN_VERSION} REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${ECM_MODULE_PATH}")
+set(CMAKE_MODULE_PATH "${ECM_MODULE_PATH}" ${CMAKE_MODULE_PATH} )
 
 find_package(Qt6 ${QT6_MIN_VERSION} REQUIRED COMPONENTS Core Widgets LinguistTools)
 find_package(ZLIB ${ZLIB_MIN_VERSION} REQUIRED)
@@ -134,11 +134,19 @@ install(TARGETS MEASaveEditor
 )
 
 set(deploy_tool_options
-    "--translations en" # Qt's translations, not app's translation
+    --translations en    # Qt's translations, not app's translation
 )
 
 if(WIN32)
-    set(deploy_tool_options "${deploy_tool_options} --no-system-d3d-compiler --no-network --no-opengl-sw")
+    set(deploy_tool_options
+	${deploy_tool_options}
+        --skip-plugin-types iconengines,imageformats,styles
+        --no-system-d3d-compiler
+        --no-system-dxc-compiler
+        --no-network
+        --no-opengl-sw
+        --no-svg
+    )
 endif()
 
 qt_generate_deploy_app_script(
