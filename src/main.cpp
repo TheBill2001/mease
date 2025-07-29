@@ -29,12 +29,16 @@ int main(int argc, char **argv)
 
     QApplication application(argc, argv);
 
-    KLocalizedString::setApplicationDomain("MEASE");
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+    QApplication::setStyle(u"breeze"_s);
+#endif
 
-    KAboutData aboutData(u"MEASE"_s,
+    KLocalizedString::setApplicationDomain("mease");
+
+    KAboutData aboutData(u"mease"_s,
                          i18n("Mass Effect: Andromeda Save Editor"),
                          QStringLiteral("0.0.1"),
-                         i18n("Mass Effect: Andromeda Save Editor"),
+                         i18n("Save editor for Mass Effect: Andromeda"),
                          KAboutLicense::GPL_V3,
                          i18n("Copyright 2025, Trần Nam Tuấn <tuantran1632001@gmail.com>"),
                          {},
@@ -45,13 +49,8 @@ int main(int argc, char **argv)
     aboutData.setOrganizationDomain("thebill2001.github.io");
     // aboutData.setDesktopFileName(QStringLiteral("org.example.testapp"));
 
-    KAboutData::setApplicationData(aboutData);
+    KAboutData::setApplicationData(std::move(aboutData));
     // application.setWindowIcon(QIcon::fromTheme(QStringLiteral("testapp")));
-
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
-    QApplication::setStyle(u"breeze"_s);
-    QIcon::setThemeName(u"breeze"_s);
-#endif
 
     QCommandLineParser parser;
     aboutData.setupCommandLine(&parser);
@@ -59,8 +58,8 @@ int main(int argc, char **argv)
     parser.process(application);
     aboutData.processCommandLine(&parser);
 
-    MEASE::MainWindow mainWindow;
-    mainWindow.show();
+    auto *mainWindow = new MEASE::MainWindow(); // Declare on the stack cause invalid free
+    mainWindow->show();
 
     return application.exec();
 }

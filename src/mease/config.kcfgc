@@ -1,0 +1,7 @@
+File=config.kcfg
+HeaderExtension=hpp
+ClassName=Config
+NameSpace=MEASE
+Mutators=true
+DefaultValueGetters=true
+Singleton=true

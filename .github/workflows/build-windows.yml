@@ -23,6 +23,8 @@ jobs:
     env:
       QT_ROOT_DIR: ${{ github.workspace }}/${{ needs.prepare-prefix.outputs.qt-root-dir }}
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Restore cache
       uses: actions/cache/restore@v4
       with:
@@ -39,20 +41,10 @@ jobs:
           extra-cmake-modules:p
           cmake:p
           zlib:p
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        path: app-source
-    - name: Configure
-      run: |
-        cmake -S app-source -B app-build -G Ninja \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" \
-          -DCMAKE_INSTALL_PREFIX="$PWD/artifacts/MEASaveEditor"
     - name: Build
-      run: cmake --build app-build --parallel
-    - name: Install
-      run: cmake --install app-build
+      run: ./scripts/build.sh --prefix "$PWD/prefix" --install "$PWD/artifacts/MEASaveEditor"
+    - name: Deploy
+      run: ./scripts/deploy.sh --prefix "$PWD/prefix" --install "$PWD/artifacts/MEASaveEditor"
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:

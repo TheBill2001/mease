@@ -1,11 +1,28 @@
 # SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
 # SPDX-License-Identifier: GPL-3.0-only
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
 qt_add_executable(mease
     main.cpp
 
     mease/ui/mainwindow.cpp
     mease/ui/mainwindow.hpp
+
+    mease/ui/pages/editorpage.cpp
+    mease/ui/pages/editorpage.hpp
+    mease/ui/pages/landingpage.cpp
+    mease/ui/pages/landingpage.hpp
+    mease/ui/pages/loadingpage.cpp
+    mease/ui/pages/loadingpage.hpp
+)
+
+add_subdirectory(mease)
+
+target_include_directories(mease PRIVATE
+    "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
 set_target_properties(mease PROPERTIES
@@ -22,20 +39,12 @@ target_link_libraries(mease PRIVATE
     KF6::I18n
     KF6::XmlGui
     KF6::IconThemes
+    KF6::WidgetsAddons
+
+    mease_config
 )
 
-if(NOT (LINUX OR (UNIX AND NOT APPLE)))
-    target_link_libraries(mease PRIVATE
-        Qt6::Svg
-    )
-endif()
+target_link_libraries(mease PRIVATE Qt6::Widgets)
 
-if(LINUX OR (UNIX AND NOT APPLE))
-    install(TARGETS mease ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-endif()
-
-if(WIN32)
-    install(TARGETS mease
-        RUNTIME DESTINATION .
-    )
-endif()
+install(TARGETS mease ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/mease/ui/measeui.rc DESTINATION ${KDE_INSTALL_KXMLGUIDIR}/mease)

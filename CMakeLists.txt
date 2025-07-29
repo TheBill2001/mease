@@ -16,10 +16,13 @@ set(KF_MIN_VERSION "6.14.0")
 find_package(ECM ${KF_MIN_VERSION} REQUIRED)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
+if(WIN32)
+    set(CMAKE_INSTALL_BINDIR .)
+endif()
+
+include(KDECompilerSettings NO_POLICY_SCOPE)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
-include(KDECompilerSettings NO_POLICY_SCOPE)
-
 include(KDEClangFormat)
 include(KDEGitCommitHooks)
 
@@ -37,33 +40,16 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     CoreAddons
+    Config
     I18n
     XmlGui
     IconThemes
-)
-
-if(NOT (LINUX OR (UNIX AND NOT APPLE)))
-    find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
-        Svg
-    )
-endif()
-
-
-set(lang_list
-    en_US
-)
-
-qt_standard_project_setup(
-    REQUIRES ${QT_MIN_VERSION}
-    I18N_SOURCE_LANGUAGE en_US
-    I18N_TRANSLATED_LANGUAGES ${lang_list}
+    WidgetsAddons
 )
 
 ecm_set_disabled_deprecation_versions(
     QT 6.8
 )
-
-include(cmake/utils.cmake)
 
 add_subdirectory(src)
 

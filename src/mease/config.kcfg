@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+    <include>QUrl</include>
+    <group name="History">
+        <entry name="LastOpenDir" type="Url">
+            <default code="true">
+                QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + QStringLiteral(&quot;/BioWare/Mass Effect Andromeda/Save&quot;))
+            </default>
+        </entry>
+    </group>
+</kcfg>
