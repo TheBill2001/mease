@@ -1,0 +1,13 @@
+diff --git a/src/lib/CMakeLists.txt b/src/lib/CMakeLists.txt
+index 600c8a8..1969a44 100644
+--- a/src/lib/CMakeLists.txt
++++ b/src/lib/CMakeLists.txt
+@@ -28,7 +28,7 @@ endif()
+ # this has issues with LTO, we have a unit test that tells if stuff got lost in the DLL
+ qt_add_big_resources(kbreezeicons_resource_SRCS
+     ${RESOURCE_FILE}
+-    OPTIONS --root /icons/breeze
++    OPTIONS --root /icons/breeze --compress-algo zstd --compress 19
+ )
+ 
+ add_library(KF6BreezeIcons ${kbreezeicons_resource_SRCS} ${kbreezeicons_SRCS})

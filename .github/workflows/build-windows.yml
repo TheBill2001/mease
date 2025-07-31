@@ -5,6 +5,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+env:
+  QT_VERSION: 6.9.1
+  KF_VERSION: 6.16.0
+  PLASMA_VERSION: 6.4.3
+
 defaults:
   run:
     shell: msys2 {0}
@@ -12,16 +17,56 @@ defaults:
 jobs:
   prepare-prefix:
     name: Prepare prefix
-    uses: ./.github/workflows/prepare-prefix-windows.yml
-    with:
-      qt-version: ${{ vars.QT_VERSION }}
-      kf-version: ${{ vars.KF_VERSION }}
+    runs-on: windows-latest
+    outputs:
+      prefix-cache-key: ${{ steps.output.outputs.prefix-cache-key }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Check cache
+      id: cache
+      uses: actions/cache/restore@v4
+      with:
+        path: prefix
+        key: ${{ runner.os }}-Qt_${{ env.QT_VERSION }}-KF_${{ env.KF_VERSION }}-Plasma_${{ env.PLASMA_VERSION }}-${{ hashFiles('scripts/deploy/common.sh') }}-${{ hashFiles('scripts/deploy/download-qt.sh') }}-${{ hashFiles('scripts/deploy/build-kde.sh') }}
+        lookup-only: true
+    - name: Setup msys2
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: CLANG64
+        update: true
+        install: >-
+          git
+          patch
+          diffutils
+          gettext
+        pacboy: >-
+          toolchain:p
+          extra-cmake-modules:p
+          cmake:p
+          zlib:p
+          python:p
+    - name: Download Qt
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: ./scripts/deploy/download-qt.sh
+    - name: Build KDE
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: ./scripts/deploy/build-kde.sh
+    - name: Save cache
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: prefix
+        key: ${{ steps.cache.outputs.cache-primary-key }}
+    - name: Output
+      id: output
+      shell: pwsh
+      run: Write-Output "prefix-cache-key=${{ steps.cache.outputs.cache-primary-key }}" >> $Env:GITHUB_OUTPUT
   build:
     name: Build MEASaveEditor
     needs: [prepare-prefix]
     runs-on: windows-latest
-    env:
-      QT_ROOT_DIR: ${{ github.workspace }}/${{ needs.prepare-prefix.outputs.qt-root-dir }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -36,15 +81,20 @@ jobs:
       with:
         msystem: CLANG64
         update: true
+        install: >-
+          git
+          patch
+          diffutils
+          gettext
         pacboy: >-
           toolchain:p
           extra-cmake-modules:p
           cmake:p
           zlib:p
     - name: Build
-      run: ./scripts/build.sh --prefix "$PWD/prefix" --install "$PWD/artifacts/MEASaveEditor"
+      run: ./scripts/deploy/build.sh --install "$PWD/artifacts/MEASaveEditor"
     - name: Deploy
-      run: ./scripts/deploy.sh --prefix "$PWD/prefix" --install "$PWD/artifacts/MEASaveEditor"
+      run: ./scripts/deploy/deploy.sh --install "$PWD/artifacts/MEASaveEditor"
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
