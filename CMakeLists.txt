@@ -3,11 +3,11 @@
 
 cmake_minimum_required(VERSION 3.24)
 
-project(MEASaveEditor
+project(mease
     LANGUAGES CXX
     VERSION 0.0.1
     DESCRIPTION "Mass Effect: Andromeda Save Editor"
-    HOMEPAGE_URL "https://github.com/TheBill2001/MEASaveEditor"
+    HOMEPAGE_URL "https://github.com/TheBill2001/mease"
 )
 
 set(QT_MIN_VERSION "6.8.0")
@@ -53,9 +53,18 @@ ecm_set_disabled_deprecation_versions(
 
 add_subdirectory(src)
 
+add_custom_target(mease_create_template
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/translate/messages.sh"
+        --project-name "${CMAKE_PROJECT_NAME}"
+        --project-version "${CMAKE_PROJECT_VERSION}"
+        --bug-report "${CMAKE_PROJECT_HOMEPAGE_URL}/issues"
+)
+
+ki18n_install(lang/po)
+
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
 ## Code Format
-file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.c src/*.cpp src/*.h src/*.hpp)
+file(GLOB_RECURSE ALL_CLANG_FORMAT_SOURCE_FILES src/*.cpp src/*.hpp)
 kde_clang_format(${ALL_CLANG_FORMAT_SOURCE_FILES})
 kde_configure_git_pre_commit_hook(CHECKS CLANG_FORMAT)

@@ -40,12 +40,12 @@ int main(int argc, char **argv)
                          QStringLiteral("0.0.1"),
                          i18n("Save editor for Mass Effect: Andromeda"),
                          KAboutLicense::GPL_V3,
-                         i18n("Copyright 2025, Trần Nam Tuấn <tuantran1632001@gmail.com>"),
+                         i18n("Copyright 2025, Trần Nam Tuấn <%1>", u"tuantran1632001@gmail.com"_s),
                          {},
-                         u"https://github.com/TheBill2001/MEASaveEditor"_s,
-                         u"https://github.com/TheBill2001/MEASaveEditor/issues"_s);
+                         u"https://github.com/TheBill2001/mease"_s,
+                         u"https://github.com/TheBill2001/mease/issues"_s);
 
-    aboutData.addAuthor(i18n("Trần Nam Tuấn"), i18n("Author"), QStringLiteral("tuantran1632001@gmail.com"));
+    aboutData.addAuthor(i18n("Trần Nam Tuấn"), i18n("Author"), u"tuantran1632001@gmail.com"_s);
     aboutData.setOrganizationDomain("thebill2001.github.io");
     // aboutData.setDesktopFileName(QStringLiteral("org.example.testapp"));
 
