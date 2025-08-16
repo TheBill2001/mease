@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef MEASE_MAINWINDOW_HPP
 #define MEASE_MAINWINDOW_HPP
 
@@ -5,25 +8,20 @@
 
 namespace MEASE
 {
-class MainWindowPrivate;
+class GameSave;
 class MainWindow : public KXmlGuiWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override;
-
-private:
-    Q_DECLARE_PRIVATE(MainWindow)
-    QScopedPointer<MainWindowPrivate> d_ptr;
 
 private Q_SLOTS:
+    void saveRecentFile(const QUrl &fileUrl);
+
+private:
     void showLanding();
     void showLoading();
-    void showEditor();
-    void showOpenFileDialog();
-    void quit();
-
+    void showEditor(const GameSave &gameSave);
     void openSelectedFile(const QUrl &fileUrl);
 };
 } // namespace MEASE

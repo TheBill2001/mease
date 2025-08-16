@@ -1,167 +1,118 @@
+// SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-only
+
 #include "mease/ui/mainwindow.hpp"
 
+#include "data/gamesave.hpp"
 #include "mease/config.hpp"
+#include "mease/serialize/serializer.hpp"
+#include "mease/ui/pages/editorpage.hpp"
 #include "mease/ui/pages/landingpage.hpp"
 #include "mease/ui/pages/loadingpage.hpp"
+#include "mease/ui/units.hpp"
+#include "mease/utils/services/messageservice.hpp"
 
-#include <KActionCollection>
-#include <KHelpMenu>
-#include <KLocalizedString>
-#include <KStandardAction>
-
-#include <QApplication>
+#include <QCoreApplication>
 #include <QFile>
 #include <QFileDialog>
-#include <QMenu>
-#include <QMenuBar>
-#include <QUndoStack>
+#include <QThreadPool>
+
+#include <KActionCollection>
+#include <KLocalizedString>
+#include <KStandardAction>
 
 using namespace Qt::StringLiterals;
 
 namespace MEASE
 {
-class MainWindowPrivate
-{
-    Q_DISABLE_COPY(MainWindowPrivate)
-    Q_DECLARE_PUBLIC(MainWindow)
-    MainWindow *q_ptr;
-
-public:
-    QUndoStack *undoStack;
-
-    QAction *openAction = nullptr;
-    KRecentFilesAction *openRecentAction = nullptr;
-    QAction *saveAction = nullptr;
-    QAction *saveAsAction = nullptr;
-    QAction *reloadAction;
-    QAction *quitAction = nullptr;
-
-    QAction *undoAction = nullptr;
-    QAction *redoAction = nullptr;
-    QAction *revertAction = nullptr;
-
-    explicit MainWindowPrivate(MainWindow *q_ptr)
-        : q_ptr{q_ptr}
-        , undoStack{new QUndoStack(q_ptr)}
-        , reloadAction{new QAction(q_ptr)}
-    {
-    }
-
-    static void removeAction(KActionCollection *actionCollection, KStandardActions::StandardAction actionKey)
-    {
-        auto *action = actionCollection->action(KStandardActions::name(actionKey));
-        if (action) {
-            actionCollection->removeAction(action);
-        }
-    }
-
-    void saveRecentFile(const QUrl &fileUrl)
-    {
-        openRecentAction->addUrl(fileUrl);
-        openRecentAction->saveEntries(Config::self()->sharedConfig()->group(u"History/RecentFiles"_s));
-    }
-};
-
 MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow{parent}
-    , d_ptr{new MainWindowPrivate(this)}
 {
-    setMinimumSize(200, 200);
-
-    Q_D(MainWindow);
+    setMinimumSize(Units::gridUnit * 34, Units::gridUnit * 34);
 
     auto *actionCollection = this->actionCollection();
 
-    d->openAction = actionCollection->addAction(KStandardAction::Open);
-    connect(d->openAction, &QAction::triggered, this, &MainWindow::showOpenFileDialog);
+    {
+        auto *openAction = actionCollection->addAction(KStandardAction::Open);
+        connect(openAction, &QAction::triggered, this, [this]() {
+            auto *fileDialog = new QFileDialog(this, i18nc("@title:window", "Open a save file"));
+            fileDialog->setMimeTypeFilters({u"application/mass-effect-andromeda-save"_s, u"application/octet-stream"_s});
+            fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+            fileDialog->setOptions(QFileDialog::ReadOnly);
+            fileDialog->setFileMode(QFileDialog::ExistingFile);
+            fileDialog->setDirectoryUrl(Config::self()->lastOpenDir());
+            fileDialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    d->openRecentAction = static_cast<KRecentFilesAction *>(actionCollection->addAction(KStandardAction::OpenRecent));
-    connect(d->openRecentAction, &KRecentFilesAction::urlSelected, this, &MainWindow::openSelectedFile);
-    d->openRecentAction->setMaxItems(10);
-    d->openRecentAction->loadEntries(Config::self()->sharedConfig()->group(u"History/RecentFiles"_s));
+            connect(fileDialog, &QFileDialog::urlSelected, this, &MainWindow::openSelectedFile);
 
-    d->saveAction = actionCollection->addAction(KStandardAction::Save);
-    d->saveAction->setDisabled(true);
+            fileDialog->show();
+        });
+    }
 
-    d->saveAsAction = actionCollection->addAction(KStandardAction::SaveAs);
-    d->saveAsAction->setDisabled(true);
+    {
+        auto *openRecentAction = static_cast<KRecentFilesAction *>(actionCollection->addAction(KStandardAction::OpenRecent));
+        connect(openRecentAction, &KRecentFilesAction::urlSelected, this, &MainWindow::openSelectedFile);
+        openRecentAction->setMaxItems(10);
+        openRecentAction->loadEntries(Config::self()->sharedConfig()->group(u"History/RecentFiles"_s));
+    }
 
-    d->reloadAction = actionCollection->addAction(u"reload"_s);
-    d->reloadAction->setText(i18n("&Reload"));
-    d->reloadAction->setToolTip(i18n("Reload current save file from disk"));
-    d->reloadAction->setIcon(QIcon::fromTheme(u"view-refresh"_s));
-    d->reloadAction->setDisabled(true);
-    KActionCollection::setDefaultShortcut(d->reloadAction, Qt::Key_F5);
+    {
+        auto *saveAction = actionCollection->addAction(KStandardAction::Save);
+        saveAction->setDisabled(true);
+    }
 
-    d->quitAction = actionCollection->addAction(KStandardAction::Quit);
-    connect(d->quitAction, &QAction::triggered, this, &MainWindow::quit);
+    {
+        auto *saveAsAction = actionCollection->addAction(KStandardAction::SaveAs);
+        saveAsAction->setDisabled(true);
+    }
 
-    d->undoAction = actionCollection->addAction(KStandardAction::Undo, d->undoStack->createUndoAction(this));
-    d->undoAction->setDisabled(true);
-    KActionCollection::setDefaultShortcut(d->undoAction, Qt::CTRL | Qt::SHIFT | Qt::Key_Z);
-    connect(d->undoStack, &QUndoStack::canUndoChanged, d->undoAction, &QAction::setEnabled);
+    {
+        auto *reloadAction = actionCollection->addAction(u"reload"_s);
+        reloadAction->setText(i18n("&Reload"));
+        reloadAction->setToolTip(i18n("Reload current save file from disk"));
+        reloadAction->setIcon(QIcon::fromTheme(u"view-refresh"_s));
+        reloadAction->setDisabled(true);
+        KActionCollection::setDefaultShortcut(reloadAction, Qt::CTRL | Qt::Key_F5);
+    }
 
-    d->redoAction = actionCollection->addAction(KStandardAction::Redo, d->undoStack->createRedoAction(this));
-    d->redoAction->setDisabled(true);
-    KActionCollection::setDefaultShortcut(d->redoAction, Qt::CTRL | Qt::SHIFT | Qt::Key_Y);
-    connect(d->undoStack, &QUndoStack::canRedoChanged, d->redoAction, &QAction::setEnabled);
+    {
+        auto *quitAction = actionCollection->addAction(KStandardAction::Quit);
+        connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    }
 
-    d->revertAction = actionCollection->addAction(u"revert"_s,
-                                                  KStandardAction::revert(
-                                                      d->undoStack,
-                                                      [d]() {
-                                                          while (d->undoStack->canUndo()) {
-                                                              d->undoStack->undo();
-                                                          }
-                                                      },
-                                                      this));
-    d->revertAction->setDisabled(true);
+    setupGUI(minimumSize(), ToolBar | Keys | Save | Create);
 
-    connect(d->undoStack, &QUndoStack::canUndoChanged, this, &KXmlGuiWindow::setWindowModified);
+    actionCollection->removeAction(actionCollection->action(KStandardActions::name(KStandardActions::HelpContents)));
+    actionCollection->removeAction(actionCollection->action(KStandardActions::name(KStandardActions::WhatsThis)));
 
-    setupGUI({500, 500}, ToolBar | Keys | Save | Create);
-
-    MainWindowPrivate::removeAction(actionCollection, KStandardActions::HelpContents);
-    MainWindowPrivate::removeAction(actionCollection, KStandardActions::WhatsThis);
+    messageService()->setMainWindow(this);
 
     showLanding();
 }
 
-MainWindow::~MainWindow() = default;
+void MainWindow::saveRecentFile(const QUrl &fileUrl)
+{
+    auto *action = static_cast<KRecentFilesAction *>(actionCollection()->action(KStandardActions::name(KStandardActions::OpenRecent)));
+    action->addUrl(fileUrl);
+    action->saveEntries(Config::self()->sharedConfig()->group(u"History/RecentFiles"_s));
+}
 
 void MainWindow::showLanding()
 {
-    setCentralWidget(new LandingPage(this));
+    setWindowTitle({});
+    setCentralWidget(new LandingPage());
 }
 
 void MainWindow::showLoading()
 {
-    setCentralWidget(new LoadingPage(this));
+    setWindowTitle({});
+    setCentralWidget(new LoadingPage());
 }
 
-void MainWindow::showEditor()
+void MainWindow::showEditor(const GameSave &gameSave)
 {
-}
-
-void MainWindow::showOpenFileDialog()
-{
-    auto *fileDialog = new QFileDialog(this, i18nc("@title:window", "Open a save file"));
-    fileDialog->setNameFilters({u"%1 (Career*)"_s.arg(i18nc("@label:listbox file dialog filter", "Save files")),
-                                u"%1 (*)"_s.arg(i18nc("@label:listbox file dialog filter", "All files"))});
-    fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
-    fileDialog->setOptions(QFileDialog::ReadOnly);
-    fileDialog->setFileMode(QFileDialog::ExistingFile);
-    fileDialog->setDirectoryUrl(Config::self()->lastOpenDir());
-
-    connect(fileDialog, &QFileDialog::finished, fileDialog, &QFileDialog::deleteLater);
-    connect(fileDialog, &QFileDialog::urlSelected, this, &MainWindow::openSelectedFile);
-
-    fileDialog->show();
-}
-
-void MainWindow::quit()
-{
-    QApplication::quit();
+    setWindowTitle(gameSave.filePath.fileName());
+    setCentralWidget(new EditorPage(std::move(gameSave)));
 }
 
 void MainWindow::openSelectedFile(const QUrl &fileUrl)
@@ -169,22 +120,37 @@ void MainWindow::openSelectedFile(const QUrl &fileUrl)
     showLoading();
 
     if (!fileUrl.isLocalFile()) {
-        // TODO: Error
-        // showLast();
+        messageService()->pushError(i18n("Failed to open save file"), i18n("Unsupported file path: %1", fileUrl.toString()));
+        showLanding();
         return;
     }
 
-    const auto localFile = fileUrl.toLocalFile();
-    QFile file(localFile);
-    if (!file.open(QFile::ReadOnly)) {
-        // TODO: Error
-        // showLast();
-        return;
-    }
+    QThreadPool::globalInstance()->start([mainWindow = this, fileUrl]() {
+        const auto localFile = fileUrl.toLocalFile();
+        QFile file(localFile);
+        if (!file.open(QFile::ReadOnly)) {
+            messageService()->pushError(i18n("Failed to open save file"), file.errorString());
+            QMetaObject::invokeMethod(mainWindow, &MainWindow::showLanding);
+            return;
+        }
 
-    Q_D(MainWindow);
-    d->saveRecentFile(fileUrl);
-    Config::setLastOpenDir(fileUrl);
-    Config::self()->save();
+        QMetaObject::invokeMethod(mainWindow, &MainWindow::saveRecentFile, fileUrl);
+        Config::setLastOpenDir(fileUrl);
+        Config::self()->save();
+
+        Serializer serializer(&file);
+        auto res = serializer.read<GameSave>();
+
+        if (!res.has_value()) {
+            messageService()->pushError(i18n("Failed to open save file"), res.error());
+            QMetaObject::invokeMethod(mainWindow, &MainWindow::showLanding);
+            return;
+        }
+
+        auto gameSave = std::move(res.value());
+        gameSave.filePath = fileUrl;
+
+        QMetaObject::invokeMethod(mainWindow, &MainWindow::showEditor, gameSave);
+    });
 }
 } // namespace MEASE

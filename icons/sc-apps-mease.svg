@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   viewBox="0 0 48 48"
+   id="svg12"
+   sodipodi:docname="kfloppy.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="16.645833"
+     inkscape:cx="24"
+     inkscape:cy="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g12" />
+  <defs
+     id="defs4">
+    <linearGradient
+       id="c"
+       x2="0"
+       y1="543.8"
+       y2="503.8"
+       gradientTransform="matrix(1.125,0,0,1,-433.64001,-499.79998)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#c6cdd1"
+         offset="0"
+         id="stop1"
+         style="stop-color:#1abbfe;stop-opacity:1;" />
+      <stop
+         stop-color="#e0e5e7"
+         offset="1"
+         id="stop2"
+         style="stop-color:#45e1e1;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="b"
+       x1="398.57"
+       x2="416.57"
+       y1="513.8"
+       y2="531.8"
+       gradientTransform="translate(-392.166,-502.8)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         stop-color="#292c2f"
+         offset="0"
+         id="stop3" />
+      <stop
+         stop-opacity="0"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+  </defs>
+  <path
+     d="m6 6h33l3 3v33h-36z"
+     fill="url(#c)"
+     id="path4" />
+  <rect
+     transform="rotate(-90)"
+     x="-42"
+     y="6"
+     width="1"
+     height="36"
+     fill="#737b81"
+     stroke-opacity=".55"
+     stroke-width="2.6563132"
+     id="rect4" />
+  <rect
+     transform="rotate(-90)"
+     x="-40"
+     y="38"
+     width="4"
+     height="3"
+     fill="#4c5154"
+     stroke-width=".1"
+     id="rect5" />
+  <path
+     d="m36 6-24 12 23 24h7v-30z"
+     fill="url(#b)"
+     fill-rule="evenodd"
+     opacity=".2"
+     id="path5" />
+  <g
+     transform="translate(2)"
+     id="g6">
+    <rect
+       x="10"
+       y="6"
+       width="24"
+       height="12"
+       fill="#4c5154"
+       id="rect6" />
+    <path
+       d="m14 6v12h20v-12zm13 2h4v8h-4z"
+       fill="#eef1f2"
+       id="path6" />
+  </g>
+  <rect
+     transform="rotate(-90)"
+     x="-39"
+     y="12"
+     width="13"
+     height="20"
+     fill="#abb9be"
+     stroke-opacity=".55"
+     stroke-width="2.8"
+     id="rect7"
+     style="fill:#4989a1;fill-opacity:1" />
+  <g
+     transform="rotate(90,51.500002,-2.499998)"
+     stroke-width=".1"
+     id="g12">
+    <rect
+       transform="rotate(-90)"
+       x="-36"
+       y="81"
+       width="18"
+       height="11"
+       fill="#fdbc4a"
+       id="rect8"
+       style="fill:#5177c6;fill-opacity:1" />
+    <g
+       fill="#fff"
+       id="g11">
+      <rect
+         transform="rotate(-90)"
+         x="-34"
+         y="87"
+         width="8"
+         height="1"
+         id="rect9" />
+      <rect
+         transform="rotate(-90)"
+         x="-34"
+         y="89"
+         width="6"
+         height="1"
+         id="rect10" />
+      <rect
+         transform="rotate(-90)"
+         x="-34"
+         y="85"
+         width="11"
+         height="1"
+         id="rect11" />
+    </g>
+  </g>
+  <rect
+     x="39"
+     y="37"
+     width="1"
+     height="2"
+     fill="#eef1f2"
+     id="rect12"
+     style="display:inline" />
+</svg>

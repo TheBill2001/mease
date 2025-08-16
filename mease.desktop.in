@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Mass Effect: Andromeda Save Editor
+GenericName=Mass Effect: Andromeda Save Editor
+Comment=Save editor for Mass Effect: Andromeda
+Keywords=mease;save editor;mass effect andromeda
+Categories=Utility;Game
+Exec=mease
+Icon=mease
+Terminal=false
+Type=Application
+MimeType=application/mass-effect-andromeda-save
+Version=@PROJECT_VERSION@
+
+Name[vi]=Trình chỉnh sửa lưu Mass Effect: Andromeda
+GenericName[vi]=Trình chỉnh sửa lưu Mass Effect: Andromeda
+Comment[vi]=Trình chỉnh sửa lưu cho Mass Effect: Andromeda

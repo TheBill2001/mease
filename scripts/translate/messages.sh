@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -108,33 +111,62 @@ if [[ -z "$BUG_ADDRESS" ]]; then
     exit 1
 fi
 
-EXTOPTS=(
-    "--c++"
-    "--kde"
-    "--from-code=UTF-8"
-    "-ci18n"
-    "-ki18n:1" "-ki18nc:1c,2" "-ki18np:1,2" "-ki18ncp:1c,2,3"
-    "-kki18n:1" "-kki18nc:1c,2" "-kki18np:1,2" "-kki18ncp:1c,2,3"
-    "-kxi18n:1" "-kxi18nc:1c,2" "-kxi18np:1,2" "-kxi18ncp:1c,2,3"
-    "-kkxi18n:1" "-kkxi18nc:1c,2" "-kkxi18np:1,2" "-kkxi18ncp:1c,2,3"
-    "-kI18N_NOOP:1" "-kI18NC_NOOP:1c,2"
-    "-kI18N_NOOP2:1c,2" "-kI18N_NOOP2_NOSTRIP:1c,2"
-    "-ktr2i18n:1" "-ktr2xi18n:1"
-    "-kN_:1"
-    "-kaliasLocale"
-    "--width=200"
-    "--add-location=file"
-    "--package-name=$PROJECT_NAME"
-    "--package-version=$PROJECT_VERSION"
-    "--msgid-bugs-address=$BUG_ADDRESS"
-)
-
 echoGray "[translate/messages] Extracting messages."
-(find "$PROJECT_DIR/src" -name '*.cpp' -o -name '*.hpp' -o -name '*.hpp.in' -o -name '*.cpp.in' | sort | xargs xgettext "${EXTOPTS[@]}" -o "$POT_FILE.new") || { echoRed "[translate/messages] Error while calling xgettext. Aborting."; exit 1; }
+
+find "$PROJECT_DIR" \( -name '*.desktop' -o -name '*.desktop.in' \) -not -path "$PROJECT_DIR/build/*" | sort > "$SCRIPT_DIR/infiles.list"
+xgettext \
+    --files-from="$SCRIPT_DIR/infiles.list" \
+    --from-code=UTF-8 \
+    --width=200 \
+    --add-location=file \
+    --language=Desktop \
+    -k -kName -kGenericName -kComment -kKeywords \
+    -D "$PROJECT_DIR" \
+    -o "$POT_FILE.new" \
+|| { echoRed "[translate/messages] Error while calling xgettext. Aborting."; exit 1; }
+
+find "$PROJECT_DIR/mimetype" -name '*.xml' | sort > "$SCRIPT_DIR/infiles.list"
+xgettext \
+    --files-from="$SCRIPT_DIR/infiles.list" \
+    --from-code=UTF-8 \
+    --width=200 \
+    --add-location=file \
+    --join-existing \
+    -D "$PROJECT_DIR" \
+    -o "$POT_FILE.new" \
+|| { echoRed "[translate/messages] Error while calling xgettext. Aborting."; exit 1; }
+
+find "$PROJECT_DIR" \( -name '*.cpp' -o -name '*.hpp' -o -name '*.hpp.in' -o -name '*.cpp.in' \) -not -path "$PROJECT_DIR/build/*" | sort > "$SCRIPT_DIR/infiles.list"
+xgettext \
+    --files-from="$SCRIPT_DIR/infiles.list" \
+    --c++ \
+    --kde \
+    --from-code=UTF-8 \
+    -ci18n \
+    -ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3 \
+    -kki18n:1 -kki18nc:1c,2 -kki18np:1,2 -kki18ncp:1c,2,3 \
+    -kxi18n:1 -kxi18nc:1c,2 -kxi18np:1,2 -kxi18ncp:1c,2,3 \
+    -kkxi18n:1 -kkxi18nc:1c,2 -kkxi18np:1,2 -kkxi18ncp:1c,2,3 \
+    -kI18N_NOOP:1 -kI18NC_NOOP:1c,2 \
+    -kI18N_NOOP2:1c,2 -kI18N_NOOP2_NOSTRIP:1c,2 \
+    -ktr2i18n:1 -ktr2xi18n:1 \
+    -kN_:1 \
+    -kaliasLocale \
+    --width=200 \
+    --add-location=file \
+    --package-name="$PROJECT_NAME" \
+    --package-version="$PROJECT_VERSION" \
+    --msgid-bugs-address="$BUG_ADDRESS" \
+    --join-existing \
+    -D "$PROJECT_DIR" \
+    -o "$POT_FILE.new" \
+    || { echoRed "[translate/messages] Error while calling xgettext. Aborting."; exit 1; }
+
+rm "$SCRIPT_DIR/infiles.list"
 
 sed -i 's/# SOME DESCRIPTIVE TITLE./'"# Translation of $PROJECT_NAME in LANGUAGE"'/' "$POT_FILE.new"
 sed -i 's/# Copyright (C) YEAR THE PACKAGE'"'"'S COPYRIGHT HOLDER/'"# Copyright (C) $(date +%Y)"'/' "$POT_FILE.new"
-sed -i 's;'"$PROJECT_DIR"';\.\./\.\./\.\.;' "$POT_FILE.new"
+sed -i 's|'"$PROJECT_DIR"'|\.\./\.\./\.\.|g' "$POT_FILE.new"
 
 if [[ -f "$POT_FILE" ]]; then
     newPotDate=$(grep "POT-Creation-Date:" "$POT_FILE.new" | sed 's/.\{3\}$//')
@@ -229,7 +261,82 @@ done
 echoGray "[translate/messages] Done merging messages"
 
 #---
-# TODO: extract .desktop
+# Generate LINGUAS for msgfmt
+if [ -f "$SCRIPT_DIR/po/LINGUAS" ]; then
+    rm "$SCRIPT_DIR/po/LINGUAS"
+fi
+mkdir -p "$SCRIPT_DIR/po"
+touch "$SCRIPT_DIR/po/LINGUAS"
+for cat in "${catalogs[@]}"; do
+    catLocale=$(basename -- "$(dirname -- "$cat")")
+    cp "$LANG_DIR/po/$catLocale/mease.po" "$SCRIPT_DIR/po/$catLocale.po"
+    echo "${catLocale}" >> "$SCRIPT_DIR/po/LINGUAS"
+done
+
+echoGray "[translate/messages] Updating .desktop file"
+
+cp -f "$PROJECT_DIR/mease.desktop.in" "$SCRIPT_DIR/template.desktop"
+sed -i '/^Name\[/ d; /^GenericName\[/ d; /^Comment\[/ d; /^Keywords\[/ d' "$SCRIPT_DIR/template.desktop"
+
+msgfmt \
+    --desktop \
+    --template="$SCRIPT_DIR/template.desktop" \
+    --verbose \
+    -d "$SCRIPT_DIR/po" \
+    -o "$SCRIPT_DIR/new.desktop"
+
+# Delete empty msgid messages that used the po header
+if grep -q '^Name=$' "$SCRIPT_DIR/new.desktop"; then
+    echo "[translate/merge] Name in mease.desktop.in is empty!"
+    sed -i '/^Name\[/ d' "$SCRIPT_DIR/new.desktop"
+fi
+if grep -q '^GenericName=$' "$SCRIPT_DIR/new.desktop"; then
+    echo "[translate/merge] GenericName in mease.desktop.in is empty!"
+    sed -i '/^GenericName\[/ d' "$SCRIPT_DIR/new.desktop"
+fi
+if grep -q '^Comment=$' "$SCRIPT_DIR/new.desktop"; then
+    echo "[translate/merge] Comment in mease.desktop.in is empty!"
+    sed -i '/^Comment\[/ d' "$SCRIPT_DIR/new.desktop"
+fi
+if grep -q '^Keywords=$' "$SCRIPT_DIR/new.desktop"; then
+    echo "[translate/merge] Keywords in mease.desktop.in is empty!"
+    sed -i '/^Keywords\[/ d' "$SCRIPT_DIR/new.desktop"
+fi
+
+# Place translations at the bottom of the desktop file.
+translatedLines=$(grep "]=" < "$SCRIPT_DIR/new.desktop")
+if [[ -n "${translatedLines}" ]]; then
+    sed -i '/^Name\[/ d; /^GenericName\[/ d; /^Comment\[/ d; /^Keywords\[/ d' "$SCRIPT_DIR/new.desktop"
+    if [[ "$(tail -c 2 "$SCRIPT_DIR/new.desktop" | wc -l)" != "2" ]]; then
+        # Does not end with 2 empty lines, so add an empty line.
+        echo "" >> "$SCRIPT_DIR/new.desktop"
+    fi
+    echo "${translatedLines}" >> "$SCRIPT_DIR/new.desktop"
+fi
+
+mv "$SCRIPT_DIR/new.desktop" "$PROJECT_DIR/mease.desktop.in"
+rm "$SCRIPT_DIR/template.desktop"
+
+echoGray "[translate/messages] Updating mimetype file"
+
+mapfile -t mimetype_files < <(find "$PROJECT_DIR/mimetype" -name '*.xml' | sort)
+
+for mimetype_file in "${mimetype_files[@]}"; do
+    cp -f "$mimetype_file" "$SCRIPT_DIR/template.xml"
+
+    msgfmt \
+        --xml \
+        --template="$SCRIPT_DIR/template.xml" \
+        --verbose \
+        -d "$SCRIPT_DIR/po" \
+        -o "$SCRIPT_DIR/new.xml"
+
+    mv "$SCRIPT_DIR/new.xml" "$PROJECT_DIR/mimetype/$(realpath -s --relative-to="$PROJECT_DIR/mimetype" "$mimetype_file")"
+    rm "$SCRIPT_DIR/template.xml"
+done
+
+# Cleanup
+rm -r "$SCRIPT_DIR/po"
 
 #---
 # Populate lang/progress.md

@@ -1,15 +1,30 @@
+// SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-only
+
 #ifndef MEASE_EDITORPAGE_HPP
 #define MEASE_EDITORPAGE_HPP
 
-#include <KPageWidget>
+#include <QTabWidget>
 
 namespace MEASE
 {
-class EditorPage : public KPageWidget
+class GameSave;
+class GameSaveObject;
+class EditorPage : public QTabWidget
 {
     Q_OBJECT
+    Q_PROPERTY(GameSaveObject *gameSave READ gameSave CONSTANT FINAL)
+
 public:
-    explicit EditorPage(QWidget *parent = nullptr);
+    EditorPage(GameSave &&gameSave, QWidget *parent = nullptr);
+    EditorPage(const GameSave &gameSave, QWidget *parent = nullptr);
+
+    GameSaveObject *gameSave() const;
+
+private:
+    GameSaveObject *m_gameSave;
+
+    void init();
 };
 } // namespace MEASE
 

@@ -1,16 +1,23 @@
-# Directories with generated files
-.cache/
-.moc/
-.obj/
-.pch/
-.rcc/
-.uic/
-/build*/
+######### IDE #########
+build
+build/
 
-# VS Code
+# QtCreator
+*.txt.user
+
+# Clang
+.cache
+.clangd
+
+# qmlls
+*.qmlls.ini
+
+# Kdevelop
+*.kdev4
+*.kate-swp
+
+# KDE stuff
+.clang-format
+
+# VSCode
 .vscode
-
-# Github Actions
-install/
-prefix/
-prefix-tmp/

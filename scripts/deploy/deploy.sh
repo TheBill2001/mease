@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
 #!/bin/bash
 
 set -e
@@ -208,6 +211,10 @@ kf_translations=(
 )
 
 for kf_translation in "${kf_translations[@]}"; do
+    if [[ -f "$QT_DIR/bin/data/locale/$kf_translation/kf6_entry.desktop" ]]; then
+        do_copy "$QT_DIR/bin/data/locale/$kf_translation/kf6_entry.desktop" "$BIN_DIR/data/locale/$1/$kf_translation/kf6_entry.desktop"
+    fi
+
     copy_kf_translation "$kf_translation" karchive6_qt.qm
     copy_kf_translation "$kf_translation" kcodecs6_qt.qm
     copy_kf_translation "$kf_translation" kcolorscheme6.mo

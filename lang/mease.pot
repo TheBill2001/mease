@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mease 0.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/TheBill2001/mease/issues\n"
-"POT-Creation-Date: 2025-07-31 20:52+0700\n"
+"POT-Creation-Date: 2025-08-01 16:53+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,22 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../src/main.cpp
+#: ../../../mease.desktop.in ../../../src/main.cpp
 #, kde-format
 msgid "Mass Effect: Andromeda Save Editor"
 msgstr ""
 
-#: ../../../src/main.cpp
+#: ../../../mease.desktop.in ../../../src/main.cpp
 #, kde-format
 msgid "Save editor for Mass Effect: Andromeda"
+msgstr ""
+
+#: ../../../mease.desktop.in
+msgid "mease;save editor;mass effect andromeda"
+msgstr ""
+
+#: ../../../mimetype/mease.xml
+msgid "Mass Effect: Andromeda save file"
 msgstr ""
 
 #: ../../../src/main.cpp
@@ -56,18 +64,6 @@ msgstr ""
 #, kde-format
 msgctxt "@title:window"
 msgid "Open a save file"
-msgstr ""
-
-#: ../../../src/mease/ui/mainwindow.cpp
-#, kde-format
-msgctxt "@label:listbox file dialog filter"
-msgid "Save files"
-msgstr ""
-
-#: ../../../src/mease/ui/mainwindow.cpp
-#, kde-format
-msgctxt "@label:listbox file dialog filter"
-msgid "All files"
 msgstr ""
 
 #: ../../../src/mease/ui/pages/landingpage.cpp
