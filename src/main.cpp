@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 #include "mease/ui/mainwindow.hpp"
+#include "mease/version.hpp"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -37,10 +38,10 @@ int main(int argc, char **argv)
 
     KAboutData aboutData(u"mease"_s,
                          i18n("Mass Effect: Andromeda Save Editor"),
-                         QStringLiteral("0.0.1"),
+                         QStringLiteral(MEASE_VERSION_STRING),
                          i18n("Save editor for Mass Effect: Andromeda"),
                          KAboutLicense::GPL_V3,
-                         i18n("Copyright (C) 2025, Trần Nam Tuấn <%1>", u"tuantran1632001@gmail.com"_s),
+                         i18n("Copyright © 2025, Trần Nam Tuấn <%1>", u"tuantran1632001@gmail.com"_s),
                          {},
                          u"https://github.com/TheBill2001/mease"_s,
                          u"https://github.com/TheBill2001/mease/issues"_s);

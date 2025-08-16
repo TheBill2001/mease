@@ -17,12 +17,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TheBill2001"
             VALUE "FileDescription", "Save editor for Mass Effect: Andromeda"
-            VALUE "FileVersion", "@PROJECT_VERSION@.0"
-            VALUE "LegalCopyright", "Copyright (C) 2025, Trần Nam Tuấn <tuantran1632001@gmail.com>"
+            VALUE "FileVersion", "@PROJECT_VERSION@"
+            VALUE "LegalCopyright", "Copyright (C) 2025, Tran Nam Tuan <tuantran1632001@gmail.com>"
             VALUE "InternalName", "mease"
             VALUE "OriginalFilename", "mease.exe"
             VALUE "ProductName", "Mass Effect: Andromeda Save Editor"
-            VALUE "ProductVersion", "@PROJECT_VERSION@.0"
+            VALUE "ProductVersion", "@PROJECT_VERSION@"
         END
     END
     BLOCK "VarFileInfo"

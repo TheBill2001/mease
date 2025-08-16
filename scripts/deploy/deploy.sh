@@ -185,6 +185,7 @@ esac
 
 copy_plugin imageformats qsvg
 copy_plugin styles breeze6
+copy_plugin styles qmodernwindowsstyle
 copy_plugin kiconthemes6/iconengines KIconEnginePlugin
 
 ##### Qt translations

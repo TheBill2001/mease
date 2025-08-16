@@ -57,6 +57,11 @@ qt_add_executable(mease
     mease/utils/services/messageservice.hpp
 )
 
+ecm_setup_version("${PROJECT_VERSION}"
+    VARIABLE_PREFIX MEASE
+    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/mease/version.hpp"
+)
+
 add_subdirectory(mease)
 
 target_include_directories(mease PRIVATE

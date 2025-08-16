@@ -36,16 +36,17 @@ MainWindow::MainWindow(QWidget *parent)
         auto *openAction = actionCollection->addAction(KStandardAction::Open);
         connect(openAction, &QAction::triggered, this, [this]() {
             auto *fileDialog = new QFileDialog(this, i18nc("@title:window", "Open a save file"));
-            fileDialog->setMimeTypeFilters({u"application/mass-effect-andromeda-save"_s, u"application/octet-stream"_s});
+            fileDialog->setAttribute(Qt::WA_DeleteOnClose, true);
             fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
             fileDialog->setOptions(QFileDialog::ReadOnly);
             fileDialog->setFileMode(QFileDialog::ExistingFile);
+            fileDialog->setMimeTypeFilters({u"application/mass-effect-andromeda-save"_s, u"application/octet-stream"_s});
             fileDialog->setDirectoryUrl(Config::self()->lastOpenDir());
             fileDialog->setAttribute(Qt::WA_DeleteOnClose, true);
 
             connect(fileDialog, &QFileDialog::urlSelected, this, &MainWindow::openSelectedFile);
 
-            fileDialog->show();
+            fileDialog->open();
         });
     }
 

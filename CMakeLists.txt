@@ -10,8 +10,8 @@ project(mease
     HOMEPAGE_URL "https://github.com/TheBill2001/mease"
 )
 
-set(QT_MIN_VERSION "6.8.0")
-set(KF_MIN_VERSION "6.14.0")
+set(QT_MIN_VERSION 6.8.0)
+set(KF_MIN_VERSION 6.14.0)
 set(ZLIB_MIN_VERSION 1.3.1)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -31,6 +31,7 @@ include(KDEGitCommitHooks)
 
 include(ECMInstallIcons)
 include(ECMDeprecationSettings)
+include(ECMSetupVersion)
 
 include(FeatureSummary)
 
